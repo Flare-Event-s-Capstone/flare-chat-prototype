@@ -1,0 +1,27 @@
+.chat-window {
+  flex: 1;
+  padding: 25px 30px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message {
+  background-color: #222;
+  color: #eee;
+  padding: 10px 15px;
+  border-radius: 12px;
+  max-width: 70%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.message:nth-child(odd) {
+  align-self: flex-start;
+}
+
+.message:nth-child(even) {
+  align-self: flex-end;
+  background-color: #b79b46;
+  color: #141414;
+}
