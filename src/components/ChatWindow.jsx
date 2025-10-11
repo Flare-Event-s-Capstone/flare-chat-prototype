@@ -1,13 +1,16 @@
 import React from "react";
 import "../styles/ChatWindow.css";
 
-function ChatWindow(){
-    return (
-        <div className="chat-window">
-            <div className="message">Hi!</div>
-            <div className="message">Welcome to Flare Chat!</div>
+function ChatWindow({ messages }) {
+  return (
+    <div className="chat-window">
+      {messages.map((msg, index) => (
+        <div key={index} className="message">
+          {msg}
         </div>
-    );
+      ))}
+    </div>
+  );
 }
 
 export default ChatWindow;
