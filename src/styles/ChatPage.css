@@ -16,17 +16,16 @@
 
 .flare-watermark {
   position: fixed;
-  bottom: 20px;
+  bottom: 25px;
   right: 25px;
-  width: 110px;
-  opacity: 0.35;
+  width: 130px;
+  opacity: 0.45;
   pointer-events: none;
   user-select: none;
-  filter: drop-shadow(0 0 6px rgba(183, 155, 70, 0.6));
+  filter: drop-shadow(0 0 10px rgba(183, 155, 70, 0.7));
   transition: opacity 0.3s ease;
 }
 
 .flare-watermark:hover {
-  opacity: 0.5;
+  opacity: 0.6;
 }
-

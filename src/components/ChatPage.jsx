@@ -3,7 +3,6 @@ import "../styles/ChatPage.css";
 import Sidebar from "./Sidebar";
 import ChatWindow from "./ChatWindow";
 import ChatInput from "./ChatInput";
-import flareLogo from "../assets/flare.png";
 
 function ChatPage() {
   const [chats, setChats] = useState({
@@ -34,7 +33,7 @@ function ChatPage() {
         <ChatWindow messages={chats[activeUser]} />
         <ChatInput onSend={handleSendMessage} />
 
-        <img src={flareLogo} alt="Flare Logo" className="flare-watermark" />
+       <img src={`${import.meta.env.BASE_URL}flare.png`} alt="Flare Logo" className="flare-watermark" />
       </div>
     </div>
   );
