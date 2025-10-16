@@ -7,7 +7,7 @@
 }
 
 .chat-main {
-  flex: 1;
+  flex: 3;
   display: flex;
   flex-direction: column;
   border-left: 2px solid #b79b46;
