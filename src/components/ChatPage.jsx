@@ -24,16 +24,30 @@ function ChatPage() {
 
   return (
     <div className="chat-container">
+      <div className="sidebar">
+        <img
+          src={`${import.meta.env.BASE_URL}Secondar Logo_White.png`}
+          alt="Secondary Logo"
+          className="secondary-logo"
+        />
+
       <Sidebar
         users={Object.keys(chats)}
         activeUser={activeUser}
         onSelectUser={setActiveUser}
       />
+      </div>
+
       <div className="chat-main">
         <ChatWindow messages={chats[activeUser]} />
         <ChatInput onSend={handleSendMessage} />
 
-       <img src={`${import.meta.env.BASE_URL}flare.png`} alt="Flare Logo" className="flare-watermark" />
+       <img
+        src={`${import.meta.env.BASE_URL}Logo_transparent.png`}
+        alt="Flare Watermark"
+        className="flare-watermark"
+        />
+
       </div>
     </div>
   );

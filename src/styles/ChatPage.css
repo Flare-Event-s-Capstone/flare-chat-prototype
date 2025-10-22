@@ -13,20 +13,29 @@
   flex-direction: column;
   border-left: 2px solid #b79b46;
   background-color: #141414;
+  position: relative;
+  overflow: hidden;
 }
 
 .flare-watermark {
-  position: fixed;
-  bottom: 80px;
-  right: 80px;
-  width: 130px;
-  opacity: 0.45;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  opacity: 0.12;
   pointer-events: none;
   user-select: none;
-  filter: drop-shadow(0 0 10px rgba(183, 155, 70, 0.7));
+  filter: drop-shadow(0 0 20px rgba(183, 155, 70, 0.4));
   transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.chat-main > *:not(.flare-watermark) {
+  position: relative;
+  z-index: 1;
 }
 
 .flare-watermark:hover {
-  opacity: 0.6;
+  opacity: 0.25;
 }
