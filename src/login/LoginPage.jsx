@@ -88,7 +88,7 @@ function LoginPage() {
   return (
     <>
     <div className="login-wrapper">
-      <img src="/flare.png" alt="Flare events Logo" className="logo"></img>
+      <img src={`${import.meta.env.BASE_URL}flare.png`} alt="Flare events Logo" className="logo" />
       <h2 className="title">Member Login</h2>
       <form onSubmit={handleLogin}>
         <label htmlFor="username">Username</label>

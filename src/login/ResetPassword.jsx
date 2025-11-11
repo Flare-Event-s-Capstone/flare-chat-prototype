@@ -35,7 +35,7 @@ export default function ResetPassword()
 
   return (
     <div className="login-wrapper">
-      <img src="/flare.png" alt="Flare events Logo" className="logo" />
+      <img src={`${import.meta.env.BASE_URL}flare.png`} alt="Flare events Logo" className="logo" />
       <h2 className="title">Reset Password</h2>
 
       <form onSubmit={onSubmit}>
