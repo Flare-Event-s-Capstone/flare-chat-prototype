@@ -6,7 +6,7 @@ export default defineConfig({
   base: '/flare-chat-prototype/',
   build: {
     outDir: 'dist',
-    assetsDir: 'assets',
+    assetsDir: '',
     emptyOutDir: true,
   },
 })
