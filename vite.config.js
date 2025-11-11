@@ -1,9 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+const isGitHubPages = process.env.GITHUB_PAGES === 'true'
+
 export default defineConfig({
   plugins: [react()],
-  base: '/flare-chat-prototype/',
+  base: isGitHubPages ? '/flare-chat-prototype/' : '/',
   build: {
     assetsDir: 'assets',
     emptyOutDir: true,

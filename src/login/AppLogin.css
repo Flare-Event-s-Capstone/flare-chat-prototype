@@ -1,0 +1,134 @@
+/* --- Base Page Styles --- */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
+  background-color: #121212; /* consistent dark background */
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* --- Login Container --- */
+.login-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+
+  background: #121212; /* match body background exactly */
+  box-shadow: none; /* remove any glow box */
+}
+
+/* --- Logo --- */
+.logo {
+  height: 6em;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 0 1em rgba(255, 200, 0, 0.5)); /* subtle glow */
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 2em rgba(255, 200, 0, 0.7));
+}
+
+/* --- Title --- */
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+/* --- Form Layout --- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+label {
+  text-align: left;
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+input {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #1f1f1f;
+  color: white;
+  font-size: 0.9rem;
+}
+
+input::placeholder {
+  color: #777;
+}
+
+/* --- Buttons --- */
+button {
+  background-color: #ffb300;
+  color: #121212;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #ffca28;
+  transform: scale(1.02);
+}
+
+/* --- Forgot Password Link --- */
+.link-button {
+  color: #2196f3;
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  transition: color 0.2s ease;
+}
+
+.link-button:hover {
+  color: #64b5f6;
+}
+
+/* --- Error Message --- */
+.error {
+  list-style-type: none;
+  padding: 0;
+  color: #f44336;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* --- Responsive for small screens --- */
+@media (max-width: 500px) {
+  .login-wrapper {
+    padding: 30px 20px;
+  }
+
+  .title {
+    font-size: 1.3rem;
+  }
+
+  button {
+    font-size: 0.95rem;
+  }
+}
