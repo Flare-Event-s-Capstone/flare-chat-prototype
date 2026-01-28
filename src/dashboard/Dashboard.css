@@ -1,0 +1,40 @@
+.dashboard {
+  height: 100vh;
+  width: 100vw;
+  background: radial-gradient(circle at center, #1b1b1b 0%, #0f0f0f 70%);
+  font-family: 'Poppins', sans-serif;
+  color: #fff;
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+.matches-link {
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffffcc;
+  transition: color 0.2s ease;
+  position: absolute;
+  top: 60px;
+  right: 30px;
+}
+
+.matches-link:hover {
+  color: #fff;
+}
+
+.settings-link {
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffffcc;
+  transition: color 0.2s ease;
+  position: absolute;
+  top: 20px;
+  right: 30px;
+}
+
+.settings-link:hover {
+  color: #fff;
+}

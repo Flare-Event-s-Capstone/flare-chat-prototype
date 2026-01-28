@@ -5,7 +5,7 @@ html, body {
   height: 100%;
   width: 100%;
   font-family: 'Poppins', sans-serif;
-  background-color: #121212; /* consistent dark background */
+  background-color: #121212;
   color: white;
   display: flex;
   justify-content: center;
@@ -25,15 +25,15 @@ html, body {
   border-radius: 12px;
   text-align: center;
 
-  background: #121212; /* match body background exactly */
-  box-shadow: none; /* remove any glow box */
+  background: #121212;
+  box-shadow: none;
 }
 
 /* --- Logo --- */
 .logo {
   height: 6em;
   margin-bottom: 1rem;
-  filter: drop-shadow(0 0 1em rgba(255, 200, 0, 0.5)); /* subtle glow */
+  filter: drop-shadow(0 0 1em rgba(255, 200, 0, 0.5));
   transition: transform 0.3s ease, filter 0.3s ease;
 }
 
