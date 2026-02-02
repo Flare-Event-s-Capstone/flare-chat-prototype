@@ -1,10 +1,10 @@
-import { useState, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
 import MatchesTab from "./MatchesTab";
 import SettingsTab from "./SettingsTab";
-import { getMe } from "./MatchesTab";
+import { getMe } from "../services/api";
 
 export default function Dashboard({ onOpenChat }) {
 	const [open, setOpen] = useState(false);
@@ -55,7 +55,8 @@ export default function Dashboard({ onOpenChat }) {
 			)}
 
 			{/* Tabs */}
-			<MatchesTab open={open} onClose={() => setOpen(false)} />
+			{/* TODO: Make message click function do a thing */}
+			<MatchesTab open={open} onClose={() => setOpen(false)} onMessageClick={onOpenChat} />
 			<SettingsTab open={openSettings} onClose={() => setOpenSettings(false)} />
 		</div>
 	);
