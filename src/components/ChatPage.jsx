@@ -12,7 +12,7 @@ import { MoonLoader } from "react-spinners";
 
 function ChatPage() {
 	const [matches, setMatches] = useState([]);
-	const [messages, setMessages] = useState(null);
+	const [messages, setMessages] = useState({});
 	const [userId, setUserId] = useState(null);
 	const [pendingMessages, setPendingMessages] = useState([]);
 	const { matchid } = useParams();
@@ -46,7 +46,7 @@ function ChatPage() {
 
 		const matchMessagesSorted = Object.entries(matchMessagesUnsorted).sort((a, b) => {
 			return new Date(a[1].senttimestamp) - new Date(b[1].senttimestamp);
-		})
+		});
 
 		const newMessages = {
 			...messages,
@@ -79,6 +79,8 @@ function ChatPage() {
 		}
 
 		getMatches();
+
+		console.log("getMatches");
 	}, []);
 
 	useEffect(() => {
@@ -91,6 +93,8 @@ function ChatPage() {
 		}
 
 		asyncUserId();
+
+		console.log("getMessages and userId");
 	}, [activeChat]);
 
 
@@ -144,22 +148,26 @@ function ChatPage() {
 				{messages && userId && activeChat &&
 					<>
 						<ChatWindow userId={userId}
-							messages={Object.values(messages[activeChat])}
+							messages={Object.keys(messages).length == 0 ? [] : Object.values(messages[activeChat])}
 							pendingMessages={pendingMessages}
 							handleAtTop={handleAtTop}
 							offsetCount={offsetCount}
 							scrollToBottom={scrollToBottom}
-							setScrollToBottom={setScrollToBottom} />
+							setScrollToBottom={setScrollToBottom}
+							noMoreMessages={noMoreMessages}
+						/>
 						<ChatInput onSend={handleSendMessage} />
 					</>
 				}
 
-				<MoonLoader
-					loading={showLoading}
-					color={"#b79b46"}
-					aria-label={"Loading Spinner"}
-					cssOverride={{ position: "absolute", top: "50%", left: "50%", zIndex: "1", pointerEvents: "none" }}
-				/>
+				<div
+					style={{ position: "absolute", top: "50%", left: "50%", zIndex: "1", transform: "transform(-50%, -50%)", pointerEvents: "none" }} >
+					<MoonLoader
+						loading={showLoading}
+						color={"#b79b46"}
+						aria-label={"Loading Spinner"}
+					/>
+				</div>
 
 				<img
 					src={`${import.meta.env.BASE_URL}Logo_transparent.png`}

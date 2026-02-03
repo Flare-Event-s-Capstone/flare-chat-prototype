@@ -1,30 +1,49 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import "../styles/ChatWindow.css";
 
-function ChatWindow({ userId, messages, pendingMessages, handleAtTop, offsetCount, scrollToBottom, setScrollToBottom }) {
+function ChatWindow({ userId, messages, pendingMessages, handleAtTop, offsetCount, noMoreMessages, scrollToBottom, setScrollToBottom }) {
 	const today = new Date()
 
 	// TODO: Move scrollbar to previous first message after atTop and offset message query
 	const scrollToRef = useRef(null);
 
 	const chatRef = useRef(null);
+	const prevScrollHeightRef = useRef(0);
 
-	const [atTop, setAtTop] = useState(false);
+	const [atMoreMessages, setAtMoreMessages] = useState(false);
 
 	const handleScroll = () => {
 		if (chatRef.current) {
-			if (chatRef.current.scrollTop === 0) {
-				setAtTop(true);
+			const { scrollTop, scrollHeight, clientHeight } = chatRef.current;
+
+			const halfWay = (scrollHeight - clientHeight) / 2;
+
+			if (scrollTop <= halfWay) {
+				setAtMoreMessages(true);
+			} else {
+				setAtMoreMessages(false);
 			}
 		}
 	};
 
-	useEffect(() => {
-		if (atTop) {
-			handleAtTop(offsetCount);
-			setAtTop(false);
+	useLayoutEffect(() => {
+		if (chatRef.current && prevScrollHeightRef.current) {
+			const newScrollHeight = chatRef.current.scrollHeight;
+			const delta = newScrollHeight - prevScrollHeightRef.current;
+			chatRef.current.scrollTop += delta;
 		}
-	}, [atTop])
+
+		prevScrollHeightRef.current = chatRef.current.scrollHeight;
+	});
+
+	useEffect(() => {
+		if (atMoreMessages) {
+			handleAtTop(offsetCount);
+			setAtMoreMessages(false);
+		}
+
+		console.log("atMoreMessages");
+	}, [atMoreMessages])
 
 	useEffect(() => {
 		if (chatRef.current) {
@@ -36,15 +55,17 @@ function ChatWindow({ userId, messages, pendingMessages, handleAtTop, offsetCoun
 				chatRef.current.removeEventListener('scroll', handleScroll);
 			}
 		};
+
+		console.log("scrollAttach");
 	}, []);
 
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (scrollToBottom) {
 			scrollToRef.current?.scrollIntoView();
 			setScrollToBottom(false);
 		}
-	}, [scrollToBottom]);
+	}, []);
 
 	const getTime = (string) => {
 		return new Date(string).toLocaleTimeString('en-US', {
@@ -86,19 +107,21 @@ function ChatWindow({ userId, messages, pendingMessages, handleAtTop, offsetCoun
 		}
 	}
 
-	const shouldPlaceDay = (messages, index) => {
+	const shouldPlaceDay = (messages, index, noMoreMessages) => {
 		if (index == 0)
-			return true;
-
-		if (index == messages.length - 1)
-			return false;
+			return noMoreMessages || messages.length < 20;
 
 		const prevMessageDate = new Date(messages[index - 1].senttimestamp);
 		const currentMessageDate = new Date(messages[index].senttimestamp);
 
-		// console.log(`message: ${messages[index].messagecontent} ${currentMessageDate.getDay()}\nnext message: ${messages[index + 1].messagecontent} ${nextMessageDate.getDay()}\n`)
+		const diff = 1.5 * 60 * 60 * 1000;
 
-		return prevMessageDate.getDay() != currentMessageDate.getDay();
+		if (prevMessageDate.getDay() != currentMessageDate.getDay())
+			return true
+		else if (prevMessageDate.getTime() + diff <= currentMessageDate.getTime())
+			return true
+		else
+			return false
 	}
 
 	const shouldPlaceTimestamp = (pendingMessages, messages, index) => {
@@ -124,7 +147,7 @@ function ChatWindow({ userId, messages, pendingMessages, handleAtTop, offsetCoun
 		<div ref={chatRef} className="chat-window">
 			{messages && userId && messages.map((msg, index) => (
 				<React.Fragment key={index}>
-					{shouldPlaceDay(messages, index) &&
+					{shouldPlaceDay(messages, index, noMoreMessages) &&
 						<span className="day">{handleDayText(msg.senttimestamp)}</span>
 					}
 					<div className={`message-container ${msg.fromuserid !== userId ? "left" : "right"}`} >
@@ -156,6 +179,7 @@ function ChatWindow({ userId, messages, pendingMessages, handleAtTop, offsetCoun
 						</div>}
 				</React.Fragment>
 			))}
+
 			<div ref={scrollToRef} id="scroll-target"></div>
 		</div>
 	);
