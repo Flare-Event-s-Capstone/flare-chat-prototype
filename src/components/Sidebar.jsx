@@ -1,18 +1,18 @@
 import React from "react";
 import "../styles/Sidebar.css";
 
-function Sidebar({ users, activeUser, onSelectUser }) {
+function Sidebar({ matches, activeChat, onSelectChat }) {
   return (
-    <div className="sidebar">
+    <div className="contacts">
       <h2 className="sidebar-title">Contacts</h2>
       <ul className="user-list">
-        {users.map((user) => (
+        {matches.map((match, index) => (
           <li
-            key={user}
-            className={`user-item ${user === activeUser ? "active" : ""}`}
-            onClick={() => onSelectUser(user)}
+            key={index}
+            className={`user-item ${match.matchid === activeChat ? "active" : ""}`}
+            onClick={() => onSelectChat(match.matchid)}
           >
-            {user}
+            {match.otherUser.firstname}
           </li>
         ))}
       </ul>

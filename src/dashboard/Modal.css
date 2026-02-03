@@ -79,7 +79,7 @@
 }
 
 .modal-textarea {
-  resize: vertical;
+  resize: none;
   box-sizing: border-box;
 }
 

@@ -20,12 +20,11 @@ html, body {
   justify-content: center;
 
   width: 100%;
-  max-width: 400px;
+  max-width: 15vw;
   padding: 40px;
   border-radius: 12px;
   text-align: center;
 
-  background: #121212;
   box-shadow: none;
 }
 
