@@ -1,41 +1,24 @@
 import "./MatchesTab.css";
 import { useEffect, useRef, useState } from "react";
 import Popover from "./Popover";
-import { getMatches, getMe, getUser } from "../services/api";
+import { getAndProcessMatches } from "../services/apiHelpers";
+import { useNavigate } from "react-router-dom";
 
-export default function MatchesTab({ open, onClose, onMessageClick }) {
+export default function MatchesTab({ open, onClose }) {
 	const overlayRef = useRef(null);
 	const closeBtnRef = useRef(null);
 	const [matches, setMatches] = useState(null);
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [selected, setSelected] = useState(null);
 
+	const navigate = useNavigate();
+
 	useEffect(() => {
-		const getAndProcessMatches = async () => {
-			const me = await getMe();
-
-			const receivedMatches = await getMatches();
-
-			const matchDataArrayPromises = receivedMatches.map(async (match) => {
-				const otherUserId = match.userid1 === me.userid ? match.userid2 : match.userid1;
-
-				const getUserRes = await getUser(otherUserId);
-
-				return {
-					otherUserId: otherUserId,
-					otherUserFirstName: getUserRes.firstname,
-					matchId: match.matchid
-				};
-			});
-
-			const matchDataArray = await Promise.all(matchDataArrayPromises);
-
-			console.log(matchDataArray);
-
-			setMatches(matchDataArray);
+		const getMatches = async () => {
+			setMatches(await getAndProcessMatches());
 		};
 
-		getAndProcessMatches();
+		getMatches();
 	}, []);
 
 	useEffect(() => {
@@ -89,7 +72,7 @@ export default function MatchesTab({ open, onClose, onMessageClick }) {
 								className="match-card"
 								onClick={(e) => openMenu({ id: data.matchId }, e.currentTarget)}
 							>
-								{data.otherUserFirstName}
+								{data.otherUser.firstname}
 							</div>)
 						})
 					}
@@ -100,7 +83,7 @@ export default function MatchesTab({ open, onClose, onMessageClick }) {
 				<Popover anchorEl={anchorEl} onClose={closeMenu} align="right">
 					<div className="popover-menu">
 						<button className="popover-item">View profile</button>
-						<button className="popover-item" onClick={() => { onMessageClick(); closeMenu(); onClose(); }}>Message</button>
+						<button className="popover-item" onClick={() => { navigate(`/chat/${selected.id}`) }}>Message</button>
 						<button className="popover-item">Report</button>
 						<button className="popover-item">Remove</button>
 					</div>

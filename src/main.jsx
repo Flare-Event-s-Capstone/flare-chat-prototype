@@ -6,6 +6,7 @@ import LoginPage from './login/LoginPage.jsx'
 import ResetPassword from './login/ResetPassword.jsx'
 import ResetSent from './login/ResetSent.jsx'
 import App from './App.jsx' 
+import ChatPage from "./components/ChatPage.jsx"
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -15,6 +16,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/reset" element={<ResetPassword />} />
         <Route path="/reset/sent" element={<ResetSent />} />
         <Route path="/dashboard" element={<App />} />
+				<Route path="/chat" element={<ChatPage />} />
+				<Route path="/chat/:matchid" element={<ChatPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useActionState} from 'react'
 import {hasSpecialChars, hasNumber, hasUpperCase, meetsLength} from '../util/validation';
 import './AppLogin.css'
@@ -89,6 +89,11 @@ function LoginPage() {
 		}
   }
 
+	useEffect(() => {
+		if (localStorage.getItem("accessToken")) {
+			navigate("/dashboard", { replace: true });
+		}
+	})
 
   return (
     <>

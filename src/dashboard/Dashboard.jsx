@@ -6,7 +6,7 @@ import MatchesTab from "./MatchesTab";
 import SettingsTab from "./SettingsTab";
 import { getMe } from "../services/api";
 
-export default function Dashboard({ onOpenChat }) {
+export default function Dashboard() {
 	const [open, setOpen] = useState(false);
 	const [openSettings, setOpenSettings] = useState(false);
 
@@ -55,8 +55,7 @@ export default function Dashboard({ onOpenChat }) {
 			)}
 
 			{/* Tabs */}
-			{/* TODO: Make message click function do a thing */}
-			<MatchesTab open={open} onClose={() => setOpen(false)} onMessageClick={onOpenChat} />
+			<MatchesTab open={open} onClose={() => setOpen(false)} />
 			<SettingsTab open={openSettings} onClose={() => setOpenSettings(false)} />
 		</div>
 	);
