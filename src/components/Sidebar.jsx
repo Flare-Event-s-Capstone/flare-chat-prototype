@@ -3,7 +3,7 @@ import "../styles/Sidebar.css";
 
 function Sidebar({ matches, activeChat, onSelectChat }) {
   return (
-    <div className="sidebar">
+    <div className="contacts">
       <h2 className="sidebar-title">Contacts</h2>
       <ul className="user-list">
         {matches.map((match, index) => (
