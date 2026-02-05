@@ -20,7 +20,7 @@ export default function ResetPassword() {
 			navigate('/reset/sent', {
 				state: {
 					message: res.resetToken,
-					username: email
+					email: email
 				}
 			})
 		}
