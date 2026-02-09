@@ -3,15 +3,22 @@
 import { Link, useLocation } from 'react-router-dom'
 
 export default function ResetSent() {
-	const { state } = useLocation() || {}
-	const resetToken = state?.resetToken
-	const email = state?.username
-	const message = 'If an account exists for this email, a reset link has been sent.'
+	const location = useLocation();
+	const state = location?.state || {};
+
+	const resetToken = state.resetToken ?? state.message;
+	const email = state.email ?? state.username;
+
+	const message = "If an account exists for this email, a reset link has been sent.";
+
+	if (!email) {
+		return <Navigate to="/reset" replace />;
+	}
 
 	return (
 		<div className="login-wrapper">
-			<img src="/flare.png" alt="Flare events Logo" className="logo" />
-			<h2 className="title">Check your email !</h2>
+			<img src={`${import.meta.env.BASE_URL}flare.png`} alt="Flare events Logo" className="logo" />
+			<h2 className="title">Check your email!</h2>
 
 			<ul className="error">
 				<li>{message}</li>
