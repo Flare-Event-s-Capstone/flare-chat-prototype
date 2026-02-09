@@ -80,14 +80,24 @@ async function reauth(callback) {
 		throw new Error("Could not get refreshToken!");
 	}
 
-	const res = await fetch(`${API_URL}/api/v1/me/sessions/refresh`, {
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-			"x-refresh": refreshToken
-		}
-	});
+	let res;
 
-	if (!res.ok) throw new Error("Could not reauth!");
+	try {
+		res = await fetch(`${API_URL}/api/v1/me/sessions/refresh`, {
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+				"x-refresh": refreshToken
+			}
+		});
+	} catch (e) {
+		localStorage.removeItem("accessToken");
+		localStorage.removeItem("refreshToken");
+	}
+
+	if (!res.ok) {
+		localStorage.removeItem("accessToken");
+		localStorage.removeItem("refreshToken");
+	}
 
 	const body = await res.json();
 
@@ -178,7 +188,7 @@ export async function sendMessage(matchid, message) {
 			"Content-Type": "application/json"
 		},
 		method: "POST",
-		body: JSON.stringify({content: message})
+		body: JSON.stringify({ content: message })
 	});
 
 	if (res.status === 401)

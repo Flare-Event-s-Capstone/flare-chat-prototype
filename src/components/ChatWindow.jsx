@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import "../styles/ChatWindow.css";
 
-function ChatWindow({ userId, messages, pendingMessages, handleAtTop, offsetCount, noMoreMessages, scrollToBottom, setScrollToBottom }) {
+function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, offsetCount, noMoreMessages, scrollToBottom, setScrollToBottom }) {
 	const today = new Date()
 
 	// TODO: Move scrollbar to previous first message after atTop and offset message query
@@ -38,11 +38,10 @@ function ChatWindow({ userId, messages, pendingMessages, handleAtTop, offsetCoun
 
 	useEffect(() => {
 		if (atMoreMessages) {
-			handleAtTop(offsetCount);
+			handleMoreMessages(offsetCount);
 			setAtMoreMessages(false);
 		}
 
-		console.log("atMoreMessages");
 	}, [atMoreMessages])
 
 	useEffect(() => {
@@ -56,7 +55,6 @@ function ChatWindow({ userId, messages, pendingMessages, handleAtTop, offsetCoun
 			}
 		};
 
-		console.log("scrollAttach");
 	}, []);
 
 
