@@ -28,8 +28,6 @@ export default function Dashboard() {
 				setMe(user);
 			} catch (err) {
 				// token invalid/expired or request failed
-				localStorage.removeItem("accessToken");
-				localStorage.removeItem("refreshToken");
 				navigate("/", { replace: true });
 			} finally {
 				setLoadingMe(false);

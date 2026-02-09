@@ -31,11 +31,6 @@ export default function SettingsTab({ open, onClose }) {
 			await logoutUser();
 		} catch (e) {
 			console.warn("Logout API failed:", e);
-		} finally {
-			localStorage.removeItem("accessToken");
-			localStorage.removeItem("refreshToken");
-
-			window.location.replace("/");
 		}
 	};
 
