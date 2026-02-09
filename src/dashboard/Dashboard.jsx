@@ -1,62 +1,62 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
-import MatchesTab from "./MatchesTab";
-import SettingsTab from "./SettingsTab";
+import Sidebar from "./Sidebar";
+import MatchesPanel from "./MatchesPanel";
+import SettingsPanel from "./SettingsPanel";
+
 import { getMe } from "../services/api";
 
 export default function Dashboard() {
-	const [open, setOpen] = useState(false);
-	const [openSettings, setOpenSettings] = useState(false);
-
+	const [active, setActive] = useState("matches"); // messages | matches | events | settings
 	const [me, setMe] = useState(null);
-	const [loadingMe, setLoadingMe] = useState(true);
-
 	const navigate = useNavigate();
 
-	useEffect(() => {
-		async function loadMe() {
-			try {
-				const token = localStorage.getItem("accessToken");
-				if (!token) {
-					navigate("/", { replace: true });
-					return;
-				}
+  useEffect(() => {
+    async function loadMe() {
+      try {
+        const token = localStorage.getItem("accessToken");
+        if (!token) return navigate("/", { replace: true });
 
-				const user = await getMe();
-				setMe(user);
-			} catch (err) {
-				// token invalid/expired or request failed
-				localStorage.removeItem("accessToken");
-				localStorage.removeItem("refreshToken");
-				navigate("/", { replace: true });
-			} finally {
-				setLoadingMe(false);
-			}
-		}
+        const user = await getMe();
+        setMe(user);
+      } catch {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        navigate("/", { replace: true });
+      }
+    }
+    loadMe();
+  }, [navigate]);
 
-		loadMe();
-	}, [navigate]);
+  return (
+    <div className="dashboard-layout">
+      <Sidebar me={me} active={active} onSelect={setActive} />
 
-	return (
-		<div className="dashboard">
+      <main className="dashboard-main">
+        {active === "matches" && <MatchesPanel />}
 
-			{!open && !openSettings && (
-				<>
-					<h2 className="matches-link" onClick={() => setOpen(true)}>
-						Matches
-					</h2>
+        {active === "settings" && <SettingsPanel me={me} />}
 
-					<h2 className="settings-link" onClick={() => setOpenSettings(true)}>
-						Settings
-					</h2>
-				</>
-			)}
+        {active === "messages" && (
+          <div className="panel">
+            <div className="panel-header">
+              <h2>Messages</h2>
+            </div>
+            <div className="panel-empty"></div>
+          </div>
+        )}
 
-			{/* Tabs */}
-			<MatchesTab open={open} onClose={() => setOpen(false)} />
-			<SettingsTab open={openSettings} onClose={() => setOpenSettings(false)} />
-		</div>
-	);
+        {active === "events" && (
+          <div className="panel">
+            <div className="panel-header">
+              <h2>Events</h2>
+            </div>
+            <div className="panel-empty"></div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
 }
