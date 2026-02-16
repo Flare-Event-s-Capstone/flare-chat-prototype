@@ -1,4 +1,5 @@
 import "./Sidebar.css";
+import { t } from "../util/i18n";
 
 export default function Sidebar({ me, active, onSelect }) {
   const initials =
@@ -22,7 +23,7 @@ export default function Sidebar({ me, active, onSelect }) {
           onClick={() => onSelect("messages")}
           type="button"
         >
-          Messages
+          {t("messages")}
         </button>
 
         <button
@@ -30,7 +31,7 @@ export default function Sidebar({ me, active, onSelect }) {
           onClick={() => onSelect("matches")}
           type="button"
         >
-          Matches
+          {t("matches")}
         </button>
 
         <button
@@ -38,7 +39,7 @@ export default function Sidebar({ me, active, onSelect }) {
           onClick={() => onSelect("events")}
           type="button"
         >
-          Events
+          {t("events")}
         </button>
 
         <button
@@ -46,7 +47,7 @@ export default function Sidebar({ me, active, onSelect }) {
           onClick={() => onSelect("settings")}
           type="button"
         >
-          Settings
+          {t("settings")}
         </button>
       </nav>
     </aside>

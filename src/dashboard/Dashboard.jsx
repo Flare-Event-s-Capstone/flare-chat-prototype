@@ -42,7 +42,7 @@ export default function Dashboard() {
         {active === "messages" && (
           <div className="panel">
             <div className="panel-header">
-              <h2>Messages</h2>
+              <h2></h2>
             </div>
             <div className="panel-empty"></div>
           </div>
@@ -51,7 +51,7 @@ export default function Dashboard() {
         {active === "events" && (
           <div className="panel">
             <div className="panel-header">
-              <h2>Events</h2>
+              <h2></h2>
             </div>
             <div className="panel-empty"></div>
           </div>

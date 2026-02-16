@@ -105,7 +105,7 @@ function LoginPage() {
 					<label htmlFor="password">Password</label>
 					<input id="password" type="password" name="password" placeholder="Enter Password" />
 
-					<button style={{ marginTop: "3vh" }} type="submit">Login</button>
+					<button type="submit">Login</button>
 
 					{formState.errors && <ul className='error'>
 						{formState.errors.map((error) => (

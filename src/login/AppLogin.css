@@ -28,6 +28,10 @@ html, body {
   box-shadow: none;
 }
 
+.login-wrapper form button {
+  margin-top: 3vh;
+}
+
 /* --- Logo --- */
 .logo {
   height: 6em;

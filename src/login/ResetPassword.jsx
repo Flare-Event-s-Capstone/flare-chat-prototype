@@ -50,11 +50,13 @@ export default function ResetPassword() {
 						{errors.map((e) => <li key={e}>{e}</li>)}
 					</ul>
 				)}
+
+				<div className="helper-row">
+					<Link className="link-button" to="/">Back to login</Link>
+				</div>
 			</form>
 
-			<div className="helper-row">
-				<Link className="link-button" to="/">Back to login</Link>
-			</div>
+
 		</div>
 	)
 }
