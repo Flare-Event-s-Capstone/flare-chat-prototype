@@ -1,7 +1,8 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import "../styles/ChatWindow.css";
+import { PulseLoader } from "react-spinners";
 
-function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, offsetCount, noMoreMessages, scrollToBottom, setScrollToBottom }) {
+function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, offsetCount, noMoreMessages, scrollToBottom, setScrollToBottom, otherUserIsTyping }) {
 	const today = new Date()
 
 	// TODO: Move scrollbar to previous first message after atTop and offset message query
@@ -63,7 +64,7 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 			scrollToRef.current?.scrollIntoView();
 			setScrollToBottom(false);
 		}
-	}, []);
+	}, [scrollToBottom]);
 
 	const getTime = (string) => {
 		return new Date(string).toLocaleTimeString('en-US', {
@@ -157,7 +158,7 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 
 						{shouldPlaceTimestamp(pendingMessages, messages, index) &&
 							<>
-								<span>{handleTimestampText(msg.senttimestamp)}</span>
+								<span className="timestamp">{handleTimestampText(msg.senttimestamp)}</span>
 							</>
 						}
 					</div>
@@ -173,10 +174,18 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 									{pendingMsg.content}
 								</div>
 							</div>
-							<span className={pendingMsg.failed ? "failed" : ""}>{handlePendingText(pendingMsg)}</span>
+							<span className={pendingMsg.failed ? "timestamp failed" : "timestamp"}>{handlePendingText(pendingMsg)}</span>
 						</div>}
 				</React.Fragment>
 			))}
+
+			{otherUserIsTyping &&
+				<div className={"message-container left"}>
+					<div className={"message left"}>
+						<PulseLoader speedMultiplier={0.6} size={10} cssOverride={{ width: "100%", height: "100%",  }} loading={otherUserIsTyping} color={"#b79b46"} aria-label={"Typing Loader"} />
+					</div>
+				</div>
+			}
 
 			<div ref={scrollToRef} id="scroll-target"></div>
 		</div>

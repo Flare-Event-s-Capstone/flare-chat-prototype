@@ -5,18 +5,30 @@ export async function getAndProcessMatches() {
 
 	const receivedMatches = await getMatches();
 
-	const matchDataArrayPromises = receivedMatches.map(async (match) => {
+	// const matchDataArrayPromises = receivedMatches.map(async (match) => {
+	// 	const otherUserId = match.userid1 === userid ? match.userid2 : match.userid1;
+
+	// 	const getUserRes = await getUser(otherUserId);
+
+	// 	return {
+	// 		otherUser: getUserRes,
+	// 		matchId: match.matchid
+	// 	};
+	// });
+
+	const matchesObject = receivedMatches.reduce(async (accumulator, match) => {
 		const otherUserId = match.userid1 === userid ? match.userid2 : match.userid1;
 
 		const getUserRes = await getUser(otherUserId);
 
-		return {
+		accumulator[match.matchid] = {
 			otherUser: getUserRes,
 			matchId: match.matchid
 		};
-	});
+		return accumulator;
+	}, {});
 
-	return await Promise.all(matchDataArrayPromises);
+	return await matchesObject;
 }
 
 export async function getUserId() {
@@ -24,3 +36,4 @@ export async function getUserId() {
 
 	return stored ? stored : await (getMe()).userid
 }
+
