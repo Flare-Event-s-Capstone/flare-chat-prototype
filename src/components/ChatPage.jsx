@@ -26,14 +26,10 @@ function ChatPage() {
 	const typingTimerRef = useRef(null);
 
 	const asyncMessages = async (offset, shouldShowLoading) => {
-		// console.log("messages", messages);
-
 		if (shouldShowLoading)
 			setShowLoading(true);
 
 		const rawMessages = await getMessages(matchid, offset);
-
-		// console.log("rawMessages", rawMessages);
 
 		if (rawMessages.length == 0) {
 			if (shouldShowLoading)
@@ -47,28 +43,18 @@ function ChatPage() {
 			return accumulator;
 		}, {});
 
-		// console.log("messagesObject", messagesObject);
-
 		const prevMessages = messages && messages[matchid] ? messages[matchid] : {}
 
-		// console.log("prevMessages", prevMessages)
-
 		const matchMessagesUnsorted = { ...messagesObject, ...prevMessages };
-
-		// console.log("matchMessagesUnsorted", matchMessagesUnsorted)
 
 		const matchMessagesSorted = Object.entries(matchMessagesUnsorted).sort((a, b) => {
 			return new Date(a[1].senttimestamp) - new Date(b[1].senttimestamp);
 		});
 
-		// console.log("matchMessagesSorted", matchMessagesSorted);
-
 		const newMessages = {
 			...messages,
 			[matchid]: Object.fromEntries(matchMessagesSorted)
 		};
-
-		// console.log("newMessages", newMessages);
 
 		setMessages(newMessages);
 
@@ -131,6 +117,7 @@ function ChatPage() {
 		function onMessageSuccessEvent(message) {
 			if (message.fromuserid != userId) {
 				setOtherUserIsTyping(false);
+				if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
 			}
 
 			const prevMessages = messages && messages[message.matchid] ? messages[message.matchid] : {}
@@ -199,19 +186,6 @@ function ChatPage() {
 				}
 			]);
 		});
-
-		// sendMessage(matchid, newMessage).then(() => {
-		// 	asyncMessages(0, false).then(() => {
-		// 		setPendingMessages([
-		// 			...pendingMessages,
-		// 			{
-		// 				content: newMessage,
-		// 				pending: false,
-		// 				failed: false
-		// 			}
-		// 		])
-		// 	});
-		// });
 
 		setPendingMessages([
 			...pendingMessages,

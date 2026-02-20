@@ -27,8 +27,17 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 		}
 	};
 
+	const isNearBottom = () => {
+		if (!chatRef.current) {
+			return false;
+		}
+		const { scrollTop, scrollHeight, clientHeight } = chatRef.current;
+
+		return scrollHeight - scrollTop - clientHeight <= 10;
+	}
+
 	useLayoutEffect(() => {
-		if (chatRef.current && prevScrollHeightRef.current) {
+		if (chatRef.current && prevScrollHeightRef.current && scrollToRef.current && !isNearBottom()) {
 			const newScrollHeight = chatRef.current.scrollHeight;
 			const delta = newScrollHeight - prevScrollHeightRef.current;
 			chatRef.current.scrollTop += delta;
@@ -60,8 +69,8 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 
 
 	useLayoutEffect(() => {
-		if (scrollToBottom) {
-			scrollToRef.current?.scrollIntoView();
+		if (scrollToRef.current && (scrollToBottom || isNearBottom())) {
+			scrollToRef.current.scrollIntoView();
 			setScrollToBottom(false);
 		}
 	}, [scrollToBottom]);
@@ -182,7 +191,7 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 			{otherUserIsTyping &&
 				<div className={"message-container left"}>
 					<div className={"message left"}>
-						<PulseLoader speedMultiplier={0.6} size={10} cssOverride={{ width: "100%", height: "100%",  }} loading={otherUserIsTyping} color={"#b79b46"} aria-label={"Typing Loader"} />
+						<PulseLoader speedMultiplier={0.6} size={10} cssOverride={{ width: "100%", height: "100%", }} loading={otherUserIsTyping} color={"#b79b46"} aria-label={"Typing Loader"} />
 					</div>
 				</div>
 			}
