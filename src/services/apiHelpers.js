@@ -5,30 +5,37 @@ export async function getAndProcessMatches() {
 
 	const receivedMatches = await getMatches();
 
-	// const matchDataArrayPromises = receivedMatches.map(async (match) => {
-	// 	const otherUserId = match.userid1 === userid ? match.userid2 : match.userid1;
-
-	// 	const getUserRes = await getUser(otherUserId);
-
-	// 	return {
-	// 		otherUser: getUserRes,
-	// 		matchId: match.matchid
-	// 	};
-	// });
-
-	const matchesObject = receivedMatches.reduce(async (accumulator, match) => {
+	const matchDataArrayPromises = receivedMatches.map(async (match) => {
 		const otherUserId = match.userid1 === userid ? match.userid2 : match.userid1;
 
 		const getUserRes = await getUser(otherUserId);
 
-		accumulator[match.matchid] = {
+		return {
 			otherUser: getUserRes,
 			matchId: match.matchid
 		};
+	});
+
+	const matchDataArray = await Promise.all(matchDataArrayPromises);
+
+	const matchesObject = matchDataArray.reduce((accumulator, match) => {
+		accumulator[match.matchId] = match;
 		return accumulator;
 	}, {});
 
-	return await matchesObject;
+	return matchesObject;
+
+	// const matchesObject = receivedMatches.reduce(async (accumulator, match) => {
+	// 	const otherUserId = match.userid1 === userid ? match.userid2 : match.userid1;
+
+	// 	const getUserRes = await getUser(otherUserId);
+
+	// 	accumulator[match.matchid] = {
+	// 		otherUser: getUserRes,
+	// 		matchId: match.matchid
+	// 	};
+	// 	return accumulator;
+	// }, {});
 }
 
 export async function getUserId() {

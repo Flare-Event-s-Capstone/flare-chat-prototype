@@ -7,7 +7,7 @@ export async function registerUser(data) {
 		body: JSON.stringify(data),
 	});
 
-	return res.json();
+	return await res.json();
 }
 
 export async function loginUser(data) {
@@ -142,7 +142,7 @@ export async function getUser(userId) {
 	else if (!res.ok)
 		throw new Error(res);
 
-	return res.json();
+	return await res.json();
 }
 
 export async function getMatches() {
@@ -159,7 +159,7 @@ export async function getMatches() {
 	else if (!res.ok)
 		throw new Error(res);
 
-	return res.json();
+	return await res.json();
 }
 
 export async function getMessages(matchid, offset) {
@@ -176,7 +176,7 @@ export async function getMessages(matchid, offset) {
 	else if (!res.ok)
 		throw new Error(res);
 
-	return res.json();
+	return await res.json();
 }
 
 export async function sendMessage(matchid, message) {

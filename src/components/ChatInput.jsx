@@ -10,6 +10,11 @@ function ChatInput({ onSend, onTyping }) {
   const handleSend = () => {
     onSend(inputValue);
     setInputValue("");
+
+		// When sending the message, reset the typing timer and interval.
+		if (timerRef.current) clearTimeout(timerRef.current);
+		if (intervalRef.current) clearInterval(intervalRef.current);
+		setIsTyping(false);
   };
 
   const handleKeyDown = (e) => {

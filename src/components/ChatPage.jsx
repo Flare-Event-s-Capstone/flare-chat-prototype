@@ -129,11 +129,11 @@ function ChatPage() {
 		}
 
 		function onMessageSuccessEvent(message) {
-			console.log(message)
+			if (message.fromuserid != userId) {
+				setOtherUserIsTyping(false);
+			}
 
 			const prevMessages = messages && messages[message.matchid] ? messages[message.matchid] : {}
-
-			console.log(prevMessages)
 
 			const matchMessagesUnsorted = { ...prevMessages, [message.messageid]: message };
 
@@ -182,7 +182,7 @@ function ChatPage() {
 			socket.off('messageFailure', onMessageFailureEvent);
 			socket.off('typing', onTypingEvent);
 		}
-	}, [messages, matches, matchid]);
+	}, [messages, matches, matchid, userId]);
 
 	const handleSendMessage = useCallback((newMessage) => {
 		if (newMessage.trim() === "") return;
