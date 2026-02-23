@@ -27,10 +27,9 @@
   align-self: flex-start;
 }
 
-/* .message-container span { */
-/* 	text-size-adjust: auto; */
-/* 	font-size: 0.85rem; */
-/* } */
+.timestamp {
+	font-size: 0.8rem;
+}
 
 .message-container.left .timestamp {
 	text-align: left;

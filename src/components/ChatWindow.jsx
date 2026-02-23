@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import "../styles/ChatWindow.css";
 import { PulseLoader } from "react-spinners";
 import ChatMessage from "./ChatMessage";
+import { AnimatePresence } from "framer-motion";
 
 function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, offsetCount, noMoreMessages, scrollToBottom, setScrollToBottom, otherUserIsTyping }) {
 	const today = new Date()
@@ -154,38 +155,30 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 
 	return (
 		<div ref={chatRef} className="chat-window">
-			{messages && userId && messages.map((msg, index) => (
-				<React.Fragment key={msg.messageid}>
-					{shouldPlaceDay(messages, index, noMoreMessages) &&
-						<span className="day">{handleDayText(msg.senttimestamp)}</span>
-					}
-					<ChatMessage msg={msg} isTo={msg.fromuserid === userId} isTimestamped={shouldPlaceTimestamp(pendingMessages, messages, index)} />
-				</React.Fragment>
-			))}
+			<AnimatePresence>
+				{messages && userId && messages.map((msg, index) => (
+					<React.Fragment key={msg.messageid}>
+						{shouldPlaceDay(messages, index, noMoreMessages) &&
+							<span className="day">{handleDayText(msg.senttimestamp)}</span>
+						}
+						<ChatMessage msg={msg} isTo={msg.fromuserid === userId} isTimestamped={shouldPlaceTimestamp(pendingMessages, messages, index)} />
+					</React.Fragment>
+				))}
 
-			{pendingMessages && pendingMessages.map((pendingMsg, index) => (
-				<React.Fragment key={index}>
-					{shouldPlacePendingMessage(pendingMsg) &&
-						<div className={"message-container right"}>
-							<div className={"message right"}>
-								<div>
-									{pendingMsg.content}
-								</div>
-							</div>
-							<span className={pendingMsg.failed ? "timestamp failed" : "timestamp"}>{handlePendingText(pendingMsg)}</span>
-						</div>}
-				</React.Fragment>
-			))}
+				{pendingMessages && pendingMessages.map((pendingMsg, index) => (
+					<React.Fragment key={index}>
+						{shouldPlacePendingMessage(pendingMsg) &&
+							<ChatMessage msg={pendingMsg} pendingMessage={true} />
+						}
+					</React.Fragment>
+				))}
 
-			{otherUserIsTyping &&
-				<div className={"message-container left"}>
-					<div className={"message left"}>
-						<PulseLoader speedMultiplier={0.6} size={10} cssOverride={{ width: "100%", height: "100%", }} loading={otherUserIsTyping} color={"#b79b46"} aria-label={"Typing Loader"} />
-					</div>
-				</div>
-			}
+				{otherUserIsTyping &&
+					<ChatMessage typingIndicator={true} />
+				}
+			</AnimatePresence>
 
-			<div ref={scrollToRef} id="scroll-target"></div>
+			<div ref={scrollToRef} id="scroll-target" />
 		</div>
 	);
 }

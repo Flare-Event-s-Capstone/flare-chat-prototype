@@ -1,11 +1,10 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import "../styles/ChatPage.css";
 import Sidebar from "./Sidebar";
 import ChatWindow from "./ChatWindow";
 import ChatInput from "./ChatInput";
 import { getAndProcessMatches } from "../services/apiHelpers";
 import { useParams } from "react-router-dom";
-import { sendMessage } from "../services/api";
 import { getMessages } from "../services/api";
 import { getUserId } from "../services/apiHelpers";
 import { MoonLoader } from "react-spinners";
@@ -111,7 +110,8 @@ function ChatPage() {
 			setSocketIsConnected(false);
 		}
 
-		function onMessageEvent(event) {
+		function onMessageEvent(message) {
+			// TODO
 		}
 
 		function onMessageSuccessEvent(message) {
