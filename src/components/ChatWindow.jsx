@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import "../styles/ChatWindow.css";
 import { PulseLoader } from "react-spinners";
+import ChatMessage from "./ChatMessage";
 
 function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, offsetCount, noMoreMessages, scrollToBottom, setScrollToBottom, otherUserIsTyping }) {
 	const today = new Date()
@@ -154,23 +155,11 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 	return (
 		<div ref={chatRef} className="chat-window">
 			{messages && userId && messages.map((msg, index) => (
-				<React.Fragment key={index}>
+				<React.Fragment key={msg.messageid}>
 					{shouldPlaceDay(messages, index, noMoreMessages) &&
 						<span className="day">{handleDayText(msg.senttimestamp)}</span>
 					}
-					<div className={`message-container ${msg.fromuserid !== userId ? "left" : "right"}`} >
-						<div className={`message ${msg.fromuserid !== userId ? "left" : "right"}`}>
-							<div>
-								{msg.messagecontent}
-							</div>
-						</div>
-
-						{shouldPlaceTimestamp(pendingMessages, messages, index) &&
-							<>
-								<span className="timestamp">{handleTimestampText(msg.senttimestamp)}</span>
-							</>
-						}
-					</div>
+					<ChatMessage msg={msg} isTo={msg.fromuserid === userId} isTimestamped={shouldPlaceTimestamp(pendingMessages, messages, index)} />
 				</React.Fragment>
 			))}
 
