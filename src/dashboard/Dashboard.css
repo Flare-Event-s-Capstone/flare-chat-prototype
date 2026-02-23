@@ -25,7 +25,7 @@
   background: url("/Logo_transparent.png") center center no-repeat;
   background-size: 550px;
 
-  opacity: 0.15;
+  opacity: 0.35;
   pointer-events: none;
   z-index: 0;
 }
