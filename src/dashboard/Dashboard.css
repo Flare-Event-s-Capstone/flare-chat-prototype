@@ -1,7 +1,9 @@
 .dashboard-layout {
   height: 100vh;
   width: 100vw;
-  background: radial-gradient(circle at center, #1b1b1b 0%, #0f0f0f 70%);
+
+  background: radial-gradient(circle at 58% 65%, #1b1b1b 0%, #0f0f0f 70%);
+
   font-family: "Poppins", sans-serif;
   color: #fff;
   display: flex;
@@ -12,4 +14,23 @@
   flex: 1;
   padding: 18px;
   overflow: auto;
+  position: relative;
+}
+
+.dashboard-main::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: url("/Logo_transparent.png") center center no-repeat;
+  background-size: 550px;
+
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dashboard-main > * {
+  position: relative;
+  z-index: 1;
 }
