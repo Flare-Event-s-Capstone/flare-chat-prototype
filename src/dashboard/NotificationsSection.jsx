@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./Modal.css";
+import { t } from "../util/i18n";
 
 export default function NotificationsSection() {
   const [emailNotifs, setEmailNotifs] = useState(true);
@@ -8,7 +9,9 @@ export default function NotificationsSection() {
 
   useEffect(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem("prefs_notifications") || "{}");
+      const saved = JSON.parse(
+        localStorage.getItem("prefs_notifications") || "{}"
+      );
       if (typeof saved.emailNotifs === "boolean") setEmailNotifs(saved.emailNotifs);
       if (typeof saved.pushNotifs === "boolean") setPushNotifs(saved.pushNotifs);
       if (typeof saved.matchAlerts === "boolean") setMatchAlerts(saved.matchAlerts);
@@ -26,7 +29,7 @@ export default function NotificationsSection() {
   return (
     <form className="modal-form" onSubmit={handleSave}>
       <div className="modal-section">
-        <h3 className="modal-section-title">Notifications</h3>
+        <h3 className="modal-section-title">{t("notificationsTitle")}</h3>
 
         <label className="modal-checkbox">
           <input
@@ -34,7 +37,7 @@ export default function NotificationsSection() {
             checked={emailNotifs}
             onChange={(e) => setEmailNotifs(e.target.checked)}
           />
-          Email notifications
+          {t("emailNotifications")}
         </label>
 
         <label className="modal-checkbox">
@@ -43,7 +46,7 @@ export default function NotificationsSection() {
             checked={pushNotifs}
             onChange={(e) => setPushNotifs(e.target.checked)}
           />
-          Push notifications
+          {t("pushNotifications")}
         </label>
 
         <label className="modal-checkbox">
@@ -52,13 +55,13 @@ export default function NotificationsSection() {
             checked={matchAlerts}
             onChange={(e) => setMatchAlerts(e.target.checked)}
           />
-          Match alerts
+          {t("matchAlerts")}
         </label>
       </div>
 
       <div className="modal-footer">
         <button type="submit" className="modal-button primary">
-          Save
+          {t("save")}
         </button>
       </div>
     </form>

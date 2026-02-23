@@ -13,11 +13,15 @@ export default function LanguageSection() {
 
   const handleSave = (e) => {
     e.preventDefault();
+
     localStorage.setItem(
       "prefs_language",
       JSON.stringify({ language })
     );
+
+    window.location.reload();
   };
+
 
   return (
     <form className="modal-form" onSubmit={handleSave}>

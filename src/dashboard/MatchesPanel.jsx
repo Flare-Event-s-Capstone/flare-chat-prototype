@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./Panel.css";
 import { getAndProcessMatches } from "../services/apiHelpers";
 import { useNavigate } from "react-router-dom";
+import { t } from "../util/i18n";
 
 export default function MatchesPanel() {
   const [matches, setMatches] = useState([]);
@@ -33,11 +34,11 @@ export default function MatchesPanel() {
   return (
     <div className="panel">
       <div className="panel-header">
-        <h2>Matches</h2>
+        <h2>{t("matches")}</h2>
       </div>
 
       <div className="panel-grid">
-        {loading && <div className="panel-empty">Loading...</div>}
+        {loading && <div className="panel-empty">{t("loading")}</div>}
 
         {!loading &&
           matches.map((m) => (
@@ -52,18 +53,18 @@ export default function MatchesPanel() {
                   onClick={() => navigate(`/chat/${m.matchId}`)}
                   type="button"
                 >
-                  Message
+                  {t("message")}
                 </button>
 
                 <button className="panel-btn secondary" type="button" disabled>
-                  View profile
+                  {t("viewProfile")}
                 </button>
               </div>
             </div>
           ))}
 
         {!loading && matches.length === 0 && (
-          <div className="panel-empty">No matches yet.</div>
+          <div className="panel-empty">{t("noMatches")}</div>
         )}
       </div>
     </div>

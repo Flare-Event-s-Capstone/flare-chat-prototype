@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./Panel.css";
+import { t } from "../util/i18n";
 
 import ProfileSection from "./ProfileSection";
 import LanguageSection from "./LanguageSection";
@@ -8,7 +9,7 @@ import NotificationsSection from "./NotificationsSection";
 import { logoutUser } from "../services/api";
 
 export default function SettingsPanel({ me }) {
-  const [tab, setTab] = useState("profile"); // profile | language | notifications
+  const [tab, setTab] = useState("profile");
 
   const handleLogout = async () => {
     try {
@@ -18,7 +19,6 @@ export default function SettingsPanel({ me }) {
     } finally {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-
       window.location.replace("/");
     }
   };
@@ -33,7 +33,7 @@ export default function SettingsPanel({ me }) {
           justifyContent: "space-between",
         }}
       >
-        <h2>Settings</h2>
+        <h2>{t("settings")}</h2>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button
@@ -42,7 +42,7 @@ export default function SettingsPanel({ me }) {
             onClick={() => setTab("profile")}
             style={{ opacity: tab === "profile" ? 1 : 0.75 }}
           >
-            Profile
+            {t("profile")}
           </button>
 
           <button
@@ -51,7 +51,7 @@ export default function SettingsPanel({ me }) {
             onClick={() => setTab("language")}
             style={{ opacity: tab === "language" ? 1 : 0.75 }}
           >
-            Language
+            {t("language")}
           </button>
 
           <button
@@ -60,7 +60,7 @@ export default function SettingsPanel({ me }) {
             onClick={() => setTab("notifications")}
             style={{ opacity: tab === "notifications" ? 1 : 0.75 }}
           >
-            Notifications
+            {t("notifications")}
           </button>
         </div>
       </div>
@@ -69,15 +69,9 @@ export default function SettingsPanel({ me }) {
       {tab === "language" && <LanguageSection />}
       {tab === "notifications" && <NotificationsSection />}
 
-    <button
-        type="button"
-        onClick={handleLogout}
-        className="logout-fixed"
-    >
-        Log out
-    </button>
-
-
+      <button type="button" onClick={handleLogout} className="logout-fixed">
+        {t("logout")}
+      </button>
     </div>
   );
 }
