@@ -44,7 +44,7 @@ export async function logoutUser() {
 	});
 
 	localStorage.removeItem("accessToken");
-	localStorage.removeItem("accessToken");
+	localStorage.removeItem("refreshToken");
 	sessionStorage.clear();
 
 	// optional: if you want to surface an error
@@ -72,29 +72,50 @@ export async function requestPasswordReset(email) {
 	};
 }
 
+let refreshInProgress = false;
+
 async function reauth(callback) {
-	const accessToken = localStorage.getItem("accessToken");
-	const refreshToken = localStorage.getItem("refreshToken");
+  if (refreshInProgress) return;
 
-	if (!refreshToken) {
-		throw new Error("Could not get refreshToken!");
-	}
+  refreshInProgress = true;
 
-	const res = await fetch(`${API_URL}/api/v1/me/sessions/refresh`, {
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-			"x-refresh": refreshToken
-		}
-	});
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
 
-	if (!res.ok) throw new Error("Could not reauth!");
+    if (!refreshToken) {
+      throw new Error("No refresh token");
+    }
 
-	const body = await res.json();
+    const res = await fetch(`${API_URL}/api/v1/me/sessions/refresh`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "x-refresh": refreshToken
+      }
+    });
 
-	if (body.accessToken) localStorage.setItem("accessToken", body.accessToken);
-	if (body.refreshToken) localStorage.setItem("refreshToken", body.refreshToken);
+    if (!res.ok) {
+      // STOP EVERYTHING if refresh fails
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      window.location.replace("/");
+      return;
+    }
 
-	return callback();
+    const body = await res.json();
+
+    if (body.accessToken)
+      localStorage.setItem("accessToken", body.accessToken);
+
+    if (body.refreshToken)
+      localStorage.setItem("refreshToken", body.refreshToken);
+
+    return callback();
+
+  } finally {
+    refreshInProgress = false;
+  }
 }
 
 export async function getMe() {
@@ -185,4 +206,29 @@ export async function sendMessage(matchid, message) {
 		return reauth(getMatches)
 	else if (!res.ok)
 		throw new Error(res);
+}
+
+export async function updateMySettings(settingsPatch) {
+  const token = localStorage.getItem("accessToken");
+
+  const res = await fetch(`${API_URL}/api/v1/me/settings`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(settingsPatch),
+  });
+
+  if (res.status === 401) {
+    return reauth(() => updateMySettings(settingsPatch));
+  }
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    console.error("updateMySettings failed:", res.status, text, settingsPatch);
+    throw new Error(text || `Failed to update settings (${res.status})`);
+  }
+
+  return res.json().catch(() => ({}));
 }

@@ -8,7 +8,7 @@ import NotificationsSection from "./NotificationsSection";
 
 import { logoutUser } from "../services/api";
 
-export default function SettingsPanel({ me }) {
+export default function SettingsPanel({ me, onMeSettingsUpdated }) {
   const [tab, setTab] = useState("profile");
 
   const handleLogout = async () => {
@@ -66,8 +66,14 @@ export default function SettingsPanel({ me }) {
       </div>
 
       {tab === "profile" && <ProfileSection me={me} />}
-      {tab === "language" && <LanguageSection />}
-      {tab === "notifications" && <NotificationsSection />}
+
+      {tab === "language" && (
+        <LanguageSection me={me} onMeSettingsUpdated={onMeSettingsUpdated} />
+      )}
+
+      {tab === "notifications" && (
+        <NotificationsSection me={me} onMeSettingsUpdated={onMeSettingsUpdated} />
+      )}
 
       <button type="button" onClick={handleLogout} className="logout-fixed">
         {t("logout")}

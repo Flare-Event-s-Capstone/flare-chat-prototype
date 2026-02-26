@@ -1,35 +1,52 @@
 import { useEffect, useState } from "react";
 import "./Modal.css";
 import { t } from "../util/i18n";
+import { updateMySettings } from "../services/api";
 
-export default function NotificationsSection() {
+export default function NotificationsSection({ me, onMeSettingsUpdated }) {
   const [emailNotifs, setEmailNotifs] = useState(true);
   const [pushNotifs, setPushNotifs] = useState(false);
   const [matchAlerts, setMatchAlerts] = useState(true);
 
-  useEffect(() => {
-    try {
-      const saved = JSON.parse(
-        localStorage.getItem("prefs_notifications") || "{}"
-      );
-      if (typeof saved.emailNotifs === "boolean") setEmailNotifs(saved.emailNotifs);
-      if (typeof saved.pushNotifs === "boolean") setPushNotifs(saved.pushNotifs);
-      if (typeof saved.matchAlerts === "boolean") setMatchAlerts(saved.matchAlerts);
-    } catch {}
-  }, []);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSave = (e) => {
+  useEffect(() => {
+    const s = me?.settings || {};
+    if (typeof s.emailnotifs === "boolean") setEmailNotifs(s.emailnotifs);
+    if (typeof s.pushnotifs === "boolean") setPushNotifs(s.pushnotifs);
+    if (typeof s.matchalerts === "boolean") setMatchAlerts(s.matchalerts);
+  }, [me]);
+
+  const handleSave = async (e) => {
     e.preventDefault();
-    localStorage.setItem(
-      "prefs_notifications",
-      JSON.stringify({ emailNotifs, pushNotifs, matchAlerts })
-    );
+    setError("");
+
+    const patch = {
+      emailnotifs: emailNotifs,
+      pushnotifs: pushNotifs,
+      matchalerts: matchAlerts,
+    };
+
+    try {
+      setSaving(true);
+      await updateMySettings(patch);
+
+      // update parent state so UI reflects saved values without refetching
+      onMeSettingsUpdated?.(patch);
+    } catch (err) {
+      setError(err?.message || "Failed to save notification settings");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <form className="modal-form" onSubmit={handleSave}>
       <div className="modal-section">
         <h3 className="modal-section-title">{t("notificationsTitle")}</h3>
+
+        {error && <p className="modal-error">{error}</p>}
 
         <label className="modal-checkbox">
           <input
@@ -60,8 +77,8 @@ export default function NotificationsSection() {
       </div>
 
       <div className="modal-footer">
-        <button type="submit" className="modal-button primary">
-          {t("save")}
+        <button type="submit" className="modal-button primary" disabled={saving}>
+          {saving ? (t("saving") || "Saving...") : t("save")}
         </button>
       </div>
     </form>
