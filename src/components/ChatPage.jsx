@@ -61,7 +61,7 @@ function ChatPage() {
 		return true;
 	}
 
-	const handleAtTop = async (count) => {
+	const handleMoreMessages = async (count) => {
 		if (noMoreMessages)
 			return;
 
@@ -79,8 +79,6 @@ function ChatPage() {
 		}
 
 		getMatches();
-
-		console.log("getMatches");
 	}, []);
 
 	useEffect(() => {
@@ -93,8 +91,6 @@ function ChatPage() {
 		}
 
 		asyncUserId();
-
-		console.log("getMessages and userId");
 	}, [activeChat]);
 
 
@@ -150,7 +146,7 @@ function ChatPage() {
 						<ChatWindow userId={userId}
 							messages={Object.keys(messages).length == 0 ? [] : Object.values(messages[activeChat])}
 							pendingMessages={pendingMessages}
-							handleAtTop={handleAtTop}
+							handleMoreMessages={handleMoreMessages}
 							offsetCount={offsetCount}
 							scrollToBottom={scrollToBottom}
 							setScrollToBottom={setScrollToBottom}

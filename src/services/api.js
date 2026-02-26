@@ -75,47 +75,38 @@ export async function requestPasswordReset(email) {
 let refreshInProgress = false;
 
 async function reauth(callback) {
-  if (refreshInProgress) return;
+	const accessToken = localStorage.getItem("accessToken");
+	const refreshToken = localStorage.getItem("refreshToken");
 
-  refreshInProgress = true;
+	if (!refreshToken) {
+		throw new Error("Could not get refreshToken!");
+	}
 
-  try {
-    const accessToken = localStorage.getItem("accessToken");
-    const refreshToken = localStorage.getItem("refreshToken");
+	let res;
 
-    if (!refreshToken) {
-      throw new Error("No refresh token");
-    }
+	try {
+		res = await fetch(`${API_URL}/api/v1/me/sessions/refresh`, {
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+				"x-refresh": refreshToken
+			}
+		});
+	} catch (e) {
+		localStorage.removeItem("accessToken");
+		localStorage.removeItem("refreshToken");
+	}
 
-    const res = await fetch(`${API_URL}/api/v1/me/sessions/refresh`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "x-refresh": refreshToken
-      }
-    });
+	if (!res.ok) {
+		localStorage.removeItem("accessToken");
+		localStorage.removeItem("refreshToken");
+	}
 
-    if (!res.ok) {
-      // STOP EVERYTHING if refresh fails
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      window.location.replace("/");
-      return;
-    }
+	const body = await res.json();
 
-    const body = await res.json();
+	if (body.accessToken) localStorage.setItem("accessToken", body.accessToken);
+	if (body.refreshToken) localStorage.setItem("refreshToken", body.refreshToken);
 
-    if (body.accessToken)
-      localStorage.setItem("accessToken", body.accessToken);
-
-    if (body.refreshToken)
-      localStorage.setItem("refreshToken", body.refreshToken);
-
-    return callback();
-
-  } finally {
-    refreshInProgress = false;
-  }
+	return callback();
 }
 
 export async function getMe() {
@@ -199,7 +190,7 @@ export async function sendMessage(matchid, message) {
 			"Content-Type": "application/json"
 		},
 		method: "POST",
-		body: JSON.stringify({content: message})
+		body: JSON.stringify({ content: message })
 	});
 
 	if (res.status === 401)
