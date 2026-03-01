@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
@@ -7,13 +7,18 @@ import MatchesPanel from "./MatchesPanel";
 import SettingsPanel from "./SettingsPanel";
 
 import { getMe } from "../services/api";
+import { setLanguage } from "../util/i18n";
 
 export default function Dashboard() {
-	const [active, setActive] = useState("matches"); // messages | matches | events | settings
-	const [me, setMe] = useState(null);
-	const navigate = useNavigate();
+  const [active, setActive] = useState("matches");
+  const [me, setMe] = useState(null);
+  const navigate = useNavigate();
+  const didLoadRef = useRef(false);
 
   useEffect(() => {
+    if (didLoadRef.current) return;
+    didLoadRef.current = true;
+
     async function loadMe() {
       try {
         const token = localStorage.getItem("accessToken");
@@ -21,14 +26,26 @@ export default function Dashboard() {
 
         const user = await getMe();
         setMe(user);
-      } catch {
+        if (user?.settings?.language) setLanguage(user.settings.language);
+      } catch (err) {
+        console.error("loadMe failed:", err);
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         navigate("/", { replace: true });
       }
     }
+
     loadMe();
   }, [navigate]);
+
+  const handleMeSettingsUpdated = (settingsPatch) => {
+    setMe((prev) =>
+      prev
+        ? { ...prev, settings: { ...(prev.settings || {}), ...settingsPatch } }
+        : prev
+    );
+    if (settingsPatch?.language) setLanguage(settingsPatch.language);
+  };
 
   return (
     <div className="dashboard-layout">
@@ -37,7 +54,9 @@ export default function Dashboard() {
       <main className="dashboard-main">
         {active === "matches" && <MatchesPanel />}
 
-        {active === "settings" && <SettingsPanel me={me} />}
+        {active === "settings" && (
+          <SettingsPanel me={me} onMeSettingsUpdated={handleMeSettingsUpdated} />
+        )}
 
         {active === "messages" && (
           <div className="panel">

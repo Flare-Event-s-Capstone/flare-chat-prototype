@@ -44,7 +44,7 @@ export async function logoutUser() {
 	});
 
 	localStorage.removeItem("accessToken");
-	localStorage.removeItem("accessToken");
+	localStorage.removeItem("refreshToken");
 	sessionStorage.clear();
 
 	// optional: if you want to surface an error
@@ -71,6 +71,8 @@ export async function requestPasswordReset(email) {
 		resetToken: data.resetToken,
 	};
 }
+
+let refreshInProgress = false;
 
 async function reauth(callback) {
 	const accessToken = localStorage.getItem("accessToken");
@@ -195,4 +197,29 @@ export async function sendMessage(matchid, message) {
 		return reauth(getMatches)
 	else if (!res.ok)
 		throw new Error(res);
+}
+
+export async function updateMySettings(settingsPatch) {
+  const token = localStorage.getItem("accessToken");
+
+  const res = await fetch(`${API_URL}/api/v1/me/settings`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(settingsPatch),
+  });
+
+  if (res.status === 401) {
+    return reauth(() => updateMySettings(settingsPatch));
+  }
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    console.error("updateMySettings failed:", res.status, text, settingsPatch);
+    throw new Error(text || `Failed to update settings (${res.status})`);
+  }
+
+  return res.json().catch(() => ({}));
 }
