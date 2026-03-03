@@ -5,6 +5,7 @@ import "./Dashboard.css";
 import Sidebar from "./Sidebar";
 import MatchesPanel from "./MatchesPanel";
 import SettingsPanel from "./SettingsPanel";
+import EventsPanel from "./EventsPanel";
 
 import { getMe } from "../services/api";
 import { setLanguage } from "../util/i18n";
@@ -67,14 +68,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {active === "events" && (
-          <div className="panel">
-            <div className="panel-header">
-              <h2></h2>
-            </div>
-            <div className="panel-empty"></div>
-          </div>
-        )}
+        {active === "events" && <EventsPanel />}
       </main>
     </div>
   );
