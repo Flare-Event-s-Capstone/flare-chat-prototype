@@ -1,1 +1,67 @@
+.evt-title {
+  margin: 10px 0 14px;
+  font-weight: 900;
+}
 
+.evt-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .evt-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.evt-card {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.evt-date {
+  font-size: 22px;
+  font-weight: 900;
+  color: #aa9450;
+  margin-bottom: 10px;
+}
+
+.evt-line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.evt-prices {
+  margin-top: 8px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.evt-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.evt-actions select {
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.evt-actions button {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(170, 148, 80, 0.2);
+  border: 1px solid rgba(170, 148, 80, 0.5);
+  color: #fff3cc;
+  font-weight: 700;
+  cursor: pointer;
+}
