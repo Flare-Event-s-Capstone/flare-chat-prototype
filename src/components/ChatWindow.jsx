@@ -1,6 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import "../styles/ChatWindow.css";
-import { PulseLoader } from "react-spinners";
 import ChatMessage from "./ChatMessage";
 import { AnimatePresence } from "framer-motion";
 
@@ -99,24 +98,7 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 			return sentTime.toDateString();
 		}
 	}
-
-	const handleTimestampText = (senttimestamp) => {
-		if (senttimestamp)
-			return getTime(senttimestamp);
-		else
-			return "Sending..."
-	}
-
-	const handlePendingText = (pendingMessage) => {
-		if (pendingMessage.pending) {
-			return "Sending...";
-		} else if (pendingMessage.failed) {
-			return "Failed";
-		} else {
-			return "Unknown";
-		}
-	}
-
+	
 	const shouldPlaceDay = (messages, index, noMoreMessages) => {
 		if (index == 0)
 			return noMoreMessages || messages.length < 20;

@@ -56,9 +56,7 @@ function ChatMessage({ msg, isTo, isTimestamped = false, pendingMessage = false,
 		<div className={`message-container ${side}`} >
 			<motion.div className={`message ${side}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
 				{!typingIndicator ? (
-					<div>
-						{handleMessageContent()}
-					</div>
+					<span>{handleMessageContent()}</span>
 				) : (
 					<PulseLoader speedMultiplier={0.6} size={10} cssOverride={{ width: "100%", height: "100%", }} loading={typingIndicator} color={"#b79b46"} aria-label={"Typing Loader"} />
 				)}
