@@ -7,25 +7,42 @@ html, body {
   font-family: 'Poppins', sans-serif;
   background-color: #121212;
   color: white;
+
+  display: block;
+}
+
+.login-page {
+  min-height: 100vh;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+.dashboard-page {
+  min-height: 100vh;
+  width: 100%;
+  display: block;
+}
+
 /* --- Login Container --- */
 .login-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 
   width: 100%;
-  max-width: 15vw;
+  max-width: 420px;
   padding: 40px;
   border-radius: 12px;
   text-align: center;
 
-  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  box-sizing: border-box;
 }
 
 .login-wrapper form button {
@@ -109,7 +126,7 @@ button:hover {
 }
 
 .link-button:hover {
-  color: #64b5f6;
+  color: #ffffff;
 }
 
 /* --- Error Message --- */
@@ -121,10 +138,11 @@ button:hover {
   margin: 0;
 }
 
-/* --- Responsive for small screens --- */
+/* Responsive for small screens */
 @media (max-width: 500px) {
   .login-wrapper {
     padding: 30px 20px;
+    max-width: 90vw;
   }
 
   .title {
