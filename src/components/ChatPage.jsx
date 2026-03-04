@@ -1,32 +1,34 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import "../styles/ChatPage.css";
 import Sidebar from "./Sidebar";
 import ChatWindow from "./ChatWindow";
 import ChatInput from "./ChatInput";
 import { getAndProcessMatches } from "../services/apiHelpers";
 import { useParams } from "react-router-dom";
-import { sendMessage } from "../services/api";
 import { getMessages } from "../services/api";
 import { getUserId } from "../services/apiHelpers";
 import { MoonLoader } from "react-spinners";
+import { socket } from "../services/ws"
 
 function ChatPage() {
-	const [matches, setMatches] = useState([]);
+	const [matches, setMatches] = useState({});
 	const [messages, setMessages] = useState({});
 	const [userId, setUserId] = useState(null);
 	const [pendingMessages, setPendingMessages] = useState([]);
 	const { matchid } = useParams();
-	const [activeChat, setActiveChat] = useState(matchid);
 	const [offsetCount, setOffsetCount] = useState(1);
 	const [noMoreMessages, setNoMoreMessages] = useState(false);
 	const [showLoading, setShowLoading] = useState(true);
 	const [scrollToBottom, setScrollToBottom] = useState(true);
+	const [socketIsConnected, setSocketIsConnected] = useState(socket.connected);
+	const [otherUserIsTyping, setOtherUserIsTyping] = useState(false);
+	const typingTimerRef = useRef(null);
 
 	const asyncMessages = async (offset, shouldShowLoading) => {
 		if (shouldShowLoading)
 			setShowLoading(true);
 
-		const rawMessages = await getMessages(activeChat, offset);
+		const rawMessages = await getMessages(matchid, offset);
 
 		if (rawMessages.length == 0) {
 			if (shouldShowLoading)
@@ -73,6 +75,12 @@ function ChatPage() {
 		}
 	}
 
+	const handleTyping = useCallback(() => {
+		if (socketIsConnected) {
+			socket.emitWithAck("typing", matchid);
+		}
+	}, [socketIsConnected]);
+
 	useEffect(() => {
 		const getMatches = async () => {
 			setMatches(await getAndProcessMatches());
@@ -91,23 +99,92 @@ function ChatPage() {
 		}
 
 		asyncUserId();
-	}, [activeChat]);
+	}, []);
 
+	useEffect(() => {
+		function onConnect() {
+			setSocketIsConnected(true);
+		}
 
-	const handleSendMessage = (newMessage) => {
+		function onDisconnect() {
+			setSocketIsConnected(false);
+		}
+
+		function onMessageEvent(message) {
+			// TODO
+		}
+
+		function onMessageSuccessEvent(message) {
+			if (message.fromuserid != userId) {
+				setOtherUserIsTyping(false);
+				if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+			}
+
+			const prevMessages = messages && messages[message.matchid] ? messages[message.matchid] : {}
+
+			const matchMessagesUnsorted = { ...prevMessages, [message.messageid]: message };
+
+			const matchMessagesSorted = Object.entries(matchMessagesUnsorted).sort((a, b) => {
+				return new Date(a[1].senttimestamp) - new Date(b[1].senttimestamp);
+			});
+
+			const newMessages = {
+				...messages,
+				[message.matchid]: Object.fromEntries(matchMessagesSorted)
+			}
+
+			setScrollToBottom(true);
+
+			setMessages(newMessages);
+		}
+
+		function onMessageFailureEvent(event) {
+			console.log(event)
+		}
+
+		function onTypingEvent(otherUserId) {
+			if (otherUserId == matches[matchid].otherUser.userid) {
+				setOtherUserIsTyping(true);
+
+				if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+
+				typingTimerRef.current = setTimeout(() => {
+					setOtherUserIsTyping(false);
+				}, 10000);
+			}
+		}
+
+		socket.on('connect', onConnect);
+		socket.on('disconnect', onDisconnect);
+		socket.on('message', onMessageEvent);
+		socket.on('messageSuccess', onMessageSuccessEvent);
+		socket.on('messageFailure', onMessageFailureEvent);
+		socket.on('typing', onTypingEvent);
+
+		return () => {
+			socket.off('connect', onConnect);
+			socket.off('disconnect', onDisconnect);
+			socket.off('message', onMessageEvent);
+			socket.off('messageSuccess', onMessageSuccessEvent);
+			socket.off('messageFailure', onMessageFailureEvent);
+			socket.off('typing', onTypingEvent);
+		}
+	}, [messages, matches, matchid, userId]);
+
+	const handleSendMessage = useCallback((newMessage) => {
 		if (newMessage.trim() === "") return;
 
-		sendMessage(activeChat, newMessage).then(() => {
-			asyncMessages(0, false).then(() => {
-				setPendingMessages([
-					...pendingMessages,
-					{
-						content: newMessage,
-						pending: false,
-						failed: false
-					}
-				])
-			});
+		if (!socketIsConnected) return;
+
+		socket.emitWithAck("message", matchid, newMessage).then(() => {
+			setPendingMessages([
+				...pendingMessages,
+				{
+					content: newMessage,
+					pending: false,
+					failed: false
+				}
+			]);
 		});
 
 		setPendingMessages([
@@ -120,7 +197,7 @@ function ChatPage() {
 		]);
 
 		setScrollToBottom(true);
-	};
+	}, [pendingMessages, socketIsConnected]);
 
 	return (
 		<div className="chat-container">
@@ -133,26 +210,26 @@ function ChatPage() {
 
 				{matches &&
 					<Sidebar
-						matches={matches}
-						activeChat={activeChat}
-						onSelectUser={setActiveChat}
+						matches={Object.values(matches)}
+						matchid={matchid}
 					/>
 				}
 			</div>
 
 			<div className="chat-main">
-				{messages && userId && activeChat &&
+				{messages && userId && matchid &&
 					<>
 						<ChatWindow userId={userId}
-							messages={Object.keys(messages).length == 0 ? [] : Object.values(messages[activeChat])}
+							messages={Object.keys(messages).length == 0 ? [] : Object.values(messages[matchid])}
 							pendingMessages={pendingMessages}
 							handleMoreMessages={handleMoreMessages}
 							offsetCount={offsetCount}
 							scrollToBottom={scrollToBottom}
 							setScrollToBottom={setScrollToBottom}
 							noMoreMessages={noMoreMessages}
+							otherUserIsTyping={otherUserIsTyping}
 						/>
-						<ChatInput onSend={handleSendMessage} />
+						<ChatInput onSend={handleSendMessage} onTyping={handleTyping} otherUserIsTyping={otherUserIsTyping} />
 					</>
 				}
 

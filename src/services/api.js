@@ -1,3 +1,5 @@
+import { socket } from "./ws";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export async function registerUser(data) {
@@ -7,7 +9,7 @@ export async function registerUser(data) {
 		body: JSON.stringify(data),
 	});
 
-	return res.json();
+	return await res.json();
 }
 
 export async function loginUser(data) {
@@ -26,6 +28,8 @@ export async function loginUser(data) {
 	// (Names may differ depending on backend response)
 	if (body.accessToken) localStorage.setItem("accessToken", body.accessToken);
 	if (body.refreshToken) localStorage.setItem("refreshToken", body.refreshToken);
+
+	if (!socket.connected) socket.connect();
 
 	return body;
 }
@@ -79,7 +83,11 @@ async function reauth(callback) {
 	const refreshToken = localStorage.getItem("refreshToken");
 
 	if (!refreshToken) {
-		throw new Error("Could not get refreshToken!");
+		localStorage.removeItem("accessToken");
+		localStorage.removeItem("refreshToken");
+		window.location.replace("/");
+		console.log("had no refresh token!")
+		return;
 	}
 
 	let res;
@@ -94,11 +102,17 @@ async function reauth(callback) {
 	} catch (e) {
 		localStorage.removeItem("accessToken");
 		localStorage.removeItem("refreshToken");
+		window.location.replace("/");
+		console.log("error on fetch!", e)
+		return;
 	}
 
 	if (!res.ok) {
 		localStorage.removeItem("accessToken");
 		localStorage.removeItem("refreshToken");
+		window.location.replace("/");
+		console.log("response bad!")
+		return;
 	}
 
 	const body = await res.json();
@@ -144,7 +158,7 @@ export async function getUser(userId) {
 	else if (!res.ok)
 		throw new Error(res);
 
-	return res.json();
+	return await res.json();
 }
 
 export async function getMatches() {
@@ -161,7 +175,7 @@ export async function getMatches() {
 	else if (!res.ok)
 		throw new Error(res);
 
-	return res.json();
+	return await res.json();
 }
 
 export async function getMessages(matchid, offset) {
@@ -174,11 +188,11 @@ export async function getMessages(matchid, offset) {
 	});
 
 	if (res.status === 401)
-		return reauth(getMatches)
+		return reauth(() => getMessages(matchid, offset))
 	else if (!res.ok)
 		throw new Error(res);
 
-	return res.json();
+	return await res.json();
 }
 
 export async function sendMessage(matchid, message) {
@@ -194,7 +208,7 @@ export async function sendMessage(matchid, message) {
 	});
 
 	if (res.status === 401)
-		return reauth(getMatches)
+		return reauth(() => sendMessage(matchid, message))
 	else if (!res.ok)
 		throw new Error(res);
 }

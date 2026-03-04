@@ -16,7 +16,26 @@ export async function getAndProcessMatches() {
 		};
 	});
 
-	return await Promise.all(matchDataArrayPromises);
+	const matchDataArray = await Promise.all(matchDataArrayPromises);
+
+	const matchesObject = matchDataArray.reduce((accumulator, match) => {
+		accumulator[match.matchId] = match;
+		return accumulator;
+	}, {});
+
+	return matchesObject;
+
+	// const matchesObject = receivedMatches.reduce(async (accumulator, match) => {
+	// 	const otherUserId = match.userid1 === userid ? match.userid2 : match.userid1;
+
+	// 	const getUserRes = await getUser(otherUserId);
+
+	// 	accumulator[match.matchid] = {
+	// 		otherUser: getUserRes,
+	// 		matchId: match.matchid
+	// 	};
+	// 	return accumulator;
+	// }, {});
 }
 
 export async function getUserId() {
@@ -24,3 +43,4 @@ export async function getUserId() {
 
 	return stored ? stored : await (getMe()).userid
 }
+

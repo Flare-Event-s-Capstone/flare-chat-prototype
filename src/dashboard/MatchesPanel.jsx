@@ -16,8 +16,8 @@ export default function MatchesPanel() {
       try {
         const data = await getAndProcessMatches();
         if (!alive) return;
-        setMatches(Array.isArray(data) ? data : []);
-      } catch {
+        setMatches(Object.values(data));
+      } catch (e) {
         if (!alive) return;
         setMatches([]);
       } finally {
@@ -41,8 +41,8 @@ export default function MatchesPanel() {
         {loading && <div className="panel-empty">{t("loading")}</div>}
 
         {!loading &&
-          matches.map((m) => (
-            <div key={m.matchId} className="panel-card">
+          matches.map((m, index) => (
+            <div key={index} className="panel-card">
               <div className="panel-card-title">
                 {m?.otherUser?.firstname} {m?.otherUser?.lastname}
               </div>

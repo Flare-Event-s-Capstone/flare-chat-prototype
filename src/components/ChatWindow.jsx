@@ -1,7 +1,9 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import "../styles/ChatWindow.css";
+import ChatMessage from "./ChatMessage";
+import { AnimatePresence } from "framer-motion";
 
-function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, offsetCount, noMoreMessages, scrollToBottom, setScrollToBottom }) {
+function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, offsetCount, noMoreMessages, scrollToBottom, setScrollToBottom, otherUserIsTyping }) {
 	const today = new Date()
 
 	// TODO: Move scrollbar to previous first message after atTop and offset message query
@@ -26,8 +28,17 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 		}
 	};
 
+	const isNearBottom = () => {
+		if (!chatRef.current) {
+			return false;
+		}
+		const { scrollTop, scrollHeight, clientHeight } = chatRef.current;
+
+		return scrollHeight - scrollTop - clientHeight <= 10;
+	}
+
 	useLayoutEffect(() => {
-		if (chatRef.current && prevScrollHeightRef.current) {
+		if (chatRef.current && prevScrollHeightRef.current && scrollToRef.current && !isNearBottom()) {
 			const newScrollHeight = chatRef.current.scrollHeight;
 			const delta = newScrollHeight - prevScrollHeightRef.current;
 			chatRef.current.scrollTop += delta;
@@ -59,11 +70,11 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 
 
 	useLayoutEffect(() => {
-		if (scrollToBottom) {
-			scrollToRef.current?.scrollIntoView();
+		if (scrollToRef.current && (scrollToBottom || isNearBottom())) {
+			scrollToRef.current.scrollIntoView();
 			setScrollToBottom(false);
 		}
-	}, []);
+	}, [scrollToBottom]);
 
 	const getTime = (string) => {
 		return new Date(string).toLocaleTimeString('en-US', {
@@ -87,24 +98,7 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 			return sentTime.toDateString();
 		}
 	}
-
-	const handleTimestampText = (senttimestamp) => {
-		if (senttimestamp)
-			return getTime(senttimestamp);
-		else
-			return "Sending..."
-	}
-
-	const handlePendingText = (pendingMessage) => {
-		if (pendingMessage.pending) {
-			return "Sending...";
-		} else if (pendingMessage.failed) {
-			return "Failed";
-		} else {
-			return "Unknown";
-		}
-	}
-
+	
 	const shouldPlaceDay = (messages, index, noMoreMessages) => {
 		if (index == 0)
 			return noMoreMessages || messages.length < 20;
@@ -143,42 +137,30 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 
 	return (
 		<div ref={chatRef} className="chat-window">
-			{messages && userId && messages.map((msg, index) => (
-				<React.Fragment key={index}>
-					{shouldPlaceDay(messages, index, noMoreMessages) &&
-						<span className="day">{handleDayText(msg.senttimestamp)}</span>
-					}
-					<div className={`message-container ${msg.fromuserid !== userId ? "left" : "right"}`} >
-						<div className={`message ${msg.fromuserid !== userId ? "left" : "right"}`}>
-							<div>
-								{msg.messagecontent}
-							</div>
-						</div>
-
-						{shouldPlaceTimestamp(pendingMessages, messages, index) &&
-							<>
-								<span>{handleTimestampText(msg.senttimestamp)}</span>
-							</>
+			<AnimatePresence>
+				{messages && userId && messages.map((msg, index) => (
+					<React.Fragment key={msg.messageid}>
+						{shouldPlaceDay(messages, index, noMoreMessages) &&
+							<span className="day">{handleDayText(msg.senttimestamp)}</span>
 						}
-					</div>
-				</React.Fragment>
-			))}
+						<ChatMessage msg={msg} isTo={msg.fromuserid === userId} isTimestamped={shouldPlaceTimestamp(pendingMessages, messages, index)} />
+					</React.Fragment>
+				))}
 
-			{pendingMessages && pendingMessages.map((pendingMsg, index) => (
-				<React.Fragment key={index}>
-					{shouldPlacePendingMessage(pendingMsg) &&
-						<div className={"message-container right"}>
-							<div className={"message right"}>
-								<div>
-									{pendingMsg.content}
-								</div>
-							</div>
-							<span className={pendingMsg.failed ? "failed" : ""}>{handlePendingText(pendingMsg)}</span>
-						</div>}
-				</React.Fragment>
-			))}
+				{pendingMessages && pendingMessages.map((pendingMsg, index) => (
+					<React.Fragment key={index}>
+						{shouldPlacePendingMessage(pendingMsg) &&
+							<ChatMessage msg={pendingMsg} pendingMessage={true} />
+						}
+					</React.Fragment>
+				))}
 
-			<div ref={scrollToRef} id="scroll-target"></div>
+				{otherUserIsTyping &&
+					<ChatMessage typingIndicator={true} />
+				}
+			</AnimatePresence>
+
+			<div ref={scrollToRef} id="scroll-target" />
 		</div>
 	);
 }
