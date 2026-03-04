@@ -7,7 +7,7 @@ export default defineConfig({
 			plugins: ['babel-plugin-react-compiler']
 		}
 	})],
-  base: '/flare-chat-prototype/',
+  base: './',
   build: {
     outDir: 'dist',
     assetsDir: '',
