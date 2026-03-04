@@ -68,7 +68,8 @@
 }
 
 .sidebar-item:hover {
-  background: rgba(45, 45, 45, 0.75);
+  background-color: #ffca28;
+  transform: scale(1.02);
 }
 
 .sidebar-item.active {

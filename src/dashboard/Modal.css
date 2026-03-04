@@ -71,6 +71,39 @@
 }
 
 .modal-button.primary {
-  background: #c79c2f;
+  background: #ffca28;
   color: #111;
+}
+
+/* Mobile Size Integration */
+
+@media (max-width: 768px) {
+  .modal-form {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .modal-section-title {
+    font-size: 1rem;
+  }
+
+  .modal-checkbox {
+    padding: 10px 0px;
+  }
+
+  .modal-checkbox input {
+    transform: scale(1.2);
+  }
+  
+  .modal-footer {
+    position: sticky;
+    bottom: 0;
+    padding: 6px 8px 6px;
+  }
+
+  .modal-button.primary {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+  }
 }

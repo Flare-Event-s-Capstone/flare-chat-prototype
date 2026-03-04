@@ -31,11 +31,16 @@ export default function SettingsPanel({ me, onMeSettingsUpdated }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          gap: 12,
+          flexWrap: "wrap",
         }}
       >
         <h2>{t("settings")}</h2>
 
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div
+          className="settings-tabs"
+          style={{ display: "flex", gap: 8, flexWrap: "wrap" }}
+        >
           <button
             className="panel-btn secondary"
             type="button"

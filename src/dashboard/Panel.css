@@ -1,5 +1,6 @@
 .panel {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -51,12 +52,6 @@
   opacity: 0.7;
 }
 
-.settings-footer {
-  margin-top: 24px;
-  display: flex;
-  justify-content: flex-end;
-}
-
 .panel-btn.danger {
   background: #b63b3b;
   color: #fff;
@@ -82,4 +77,47 @@
 
 .logout-fixed:hover {
   background: #a23232;
+}
+
+/* Mobile Size Integration */
+
+@media (max-width: 768px) {
+  .panel-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .panel,
+  .panel-grid {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .panel-card-actions {
+    flex-wrap: wrap;
+  }
+
+  .panel-btn {
+    width: 100%;
+  }
+
+  .panel-header {
+    padding: 6px 6px 0 6px;
+  }
+
+  .settings-tabs {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .settings-tabs .panel-btn.secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .logout-fixed {
+    bottom: 16px;
+    right: 16px;
+  }
 }
