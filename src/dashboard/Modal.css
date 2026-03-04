@@ -75,6 +75,11 @@
   color: #111;
 }
 
+.modal-button.important {
+	background: #a23232;
+	color: #fff;
+}
+
 /* Mobile Size Integration */
 
 @media (max-width: 768px) {
@@ -107,3 +112,4 @@
     font-size: 1rem;
   }
 }
+

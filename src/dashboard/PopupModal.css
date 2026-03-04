@@ -1,0 +1,49 @@
+.popupmodal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Dim background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's on top */
+}
+
+.popupmodal-content {
+  max-width: 500px;
+  z-index: 1001;
+  position: relative;
+  background: #1e1e1e;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 20px;
+	display: flex;
+	flex-direction: column;
+}
+
+.popupmodal-close-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-size: 1.5rem;
+}
+
+.popupmodal-close-button:hover {
+	background: none;
+}
+
+.popupmodal-header {
+  font-weight: 600;
+  margin-bottom: 40px;
+	text-align: center;
+}
+
+.popupmodal-buttons {
+	display: flex;
+	justify-content: space-between;
+}
