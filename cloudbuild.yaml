@@ -20,5 +20,9 @@ steps:
       - 'us-central1'
       - '--port'
       - '80'
-      # Remove --allow-unauthenticated if you want to lock it down to your domain only
       - '--allow-unauthenticated'
+      - '--service-account'
+      - '990971992256-compute@developer.gserviceaccount.com'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
