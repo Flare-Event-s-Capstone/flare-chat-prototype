@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LoginPage from './login/LoginPage.jsx'
 import ResetPassword from './login/ResetPassword.jsx'
 import ResetSent from './login/ResetSent.jsx'
+import ResetPasswordLink from './login/ResetPasswordLink.jsx'
 import App from './App.jsx' 
 import ChatPage from "./components/ChatPage.jsx"
 
@@ -15,9 +16,10 @@ createRoot(document.getElementById('root')).render(
         <Route path="/" element={<LoginPage />} />
         <Route path="/reset" element={<ResetPassword />} />
         <Route path="/reset/sent" element={<ResetSent />} />
+        <Route path="/reset/:resetToken" element={<ResetPasswordLink />} />
         <Route path="/dashboard" element={<App />} />
-				<Route path="/chat" element={<ChatPage />} />
-				<Route path="/chat/:matchid" element={<ChatPage />} />
+        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/chat/:matchid" element={<ChatPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

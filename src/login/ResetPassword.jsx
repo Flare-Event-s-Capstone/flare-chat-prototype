@@ -19,7 +19,7 @@ export default function ResetPassword() {
 			const res = await requestPasswordReset(email)
 			navigate('/reset/sent', {
 				state: {
-					message: res.resetToken,
+					resetToken: res.resetToken,
 					email: email
 				}
 			})
@@ -55,8 +55,6 @@ export default function ResetPassword() {
 					<Link className="link-button" to="/">Back to login</Link>
 				</div>
 			</form>
-
-
 		</div>
 	)
 }

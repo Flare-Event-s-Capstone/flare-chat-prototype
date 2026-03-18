@@ -3,6 +3,7 @@ import "./AppLogin.css";
 import LoginPage from "./LoginPage";
 import ResetPassword from "./ResetPassword";
 import ResetSent from "./ResetSent";
+import ResetPasswordLink from "./ResetPasswordLink";
 import MessagingApp from "../App";
 
 function AppLogin() {
@@ -31,7 +32,7 @@ function AppLogin() {
 
         {/* Reset confirmation page */}
         <Route
-          path="/reset-sent"
+          path="/reset/sent"
           element={
             <div className="login-page">
               <ResetSent />
@@ -39,7 +40,17 @@ function AppLogin() {
           }
         />
 
-        {/* Dashboard after successful login */}
+        {/* Reset link page */}
+        <Route
+          path="/reset/:resetToken"
+          element={
+            <div className="login-page">
+              <ResetPasswordLink />
+            </div>
+          }
+        />
+
+        {/* Dashboard */}
         <Route
           path="/dashboard"
           element={
