@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./EventsPanel.css";
+import { useOutletContext } from "react-router-dom";
+import { t } from "../util/i18n";
 
 export default function EventsPanel() {
   const events = [
@@ -38,6 +40,11 @@ export default function EventsPanel() {
     },
   ];
 
+	const { me, setMobileTitle, onMeSettingsUpdated } = useOutletContext();
+
+	useEffect(() => {
+		setMobileTitle(t("events"));
+	}, []);
   const [rsvp, setRsvp] = useState({});
   const [booked, setBooked] = useState({});
 

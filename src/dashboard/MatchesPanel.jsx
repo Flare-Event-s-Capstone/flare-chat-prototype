@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Panel.css";
 import { getAndProcessMatches } from "../services/apiHelpers";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { t } from "../util/i18n";
 import PopupModal from "./PopupModal";
 import { leaveChat, reportChat } from "../services/api";
@@ -12,6 +12,11 @@ export default function MatchesPanel() {
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const [clickedChat, setClickedChat] = useState();
 	const navigate = useNavigate();
+	const {me, setMobileTitle} = useOutletContext();
+
+	useEffect(() => {
+		setMobileTitle(t("matches"));
+	}, []);
 
 	const populateMatches = async () => {
 		try {
@@ -47,7 +52,7 @@ export default function MatchesPanel() {
 							<div className="panel-card-actions">
 								<button
 									className="panel-btn"
-									onClick={() => navigate(`/chat/${m.matchId}`)}
+									onClick={() => navigate(`/dashboard/chat/${m.matchId}`)}
 									type="button"
 								>
 									{t("message")}

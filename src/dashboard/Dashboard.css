@@ -1,7 +1,4 @@
 .dashboard-layout {
-  height: 100vh;
-  width: 100%;
-
   background: radial-gradient(circle at 58% 65%, #1b1b1b 0%, #0f0f0f 70%);
 
   font-family: "Poppins", sans-serif;
@@ -16,6 +13,11 @@
   overflow: auto;
   position: relative;
   min-height: 0;
+}
+
+.dashboard-main.nopadding {
+  padding: 0px;
+  overflow: hidden;
 }
 
 .dashboard-main::before {

@@ -1,17 +1,16 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import "../styles/ChatPage.css";
-import Sidebar from "./Sidebar";
 import ChatWindow from "./ChatWindow";
 import ChatInput from "./ChatInput";
 import { getAndProcessMatches } from "../services/apiHelpers";
-import { useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 import { getMessages } from "../services/api";
 import { getUserId } from "../services/apiHelpers";
 import { MoonLoader } from "react-spinners";
 import { socket } from "../services/ws"
 
 function ChatPage() {
-	const [matches, setMatches] = useState({});
+	const [matches, setMatches] = useState(null);
 	const [messages, setMessages] = useState({});
 	const [userId, setUserId] = useState(null);
 	const [pendingMessages, setPendingMessages] = useState([]);
@@ -23,6 +22,7 @@ function ChatPage() {
 	const [socketIsConnected, setSocketIsConnected] = useState(socket.connected);
 	const [otherUserIsTyping, setOtherUserIsTyping] = useState(false);
 	const typingTimerRef = useRef(null);
+	const {me, setMobileTitle} = useOutletContext();
 
 	const asyncMessages = async (offset, shouldShowLoading) => {
 		if (shouldShowLoading)
@@ -67,7 +67,7 @@ function ChatPage() {
 		if (noMoreMessages)
 			return;
 
-		if (await asyncMessages(count * 20, true)) {
+		if (await asyncMessages(count * 40, true)) {
 			setOffsetCount(offsetCount + 1);
 			setNoMoreMessages(false);
 		} else {
@@ -80,6 +80,13 @@ function ChatPage() {
 			socket.emitWithAck("typing", matchid);
 		}
 	}, [socketIsConnected]);
+
+	useEffect(() => {
+		if (matchid && matches && setMobileTitle) {
+			setMobileTitle(matches[matchid].otherUser.firstname);
+			console.log("tsets");
+		}
+	}, [matchid, matches, setMobileTitle]);
 
 	useEffect(() => {
 		const getMatches = async () => {
@@ -201,20 +208,11 @@ function ChatPage() {
 
 	return (
 		<div className="chat-container">
-			<div className="sidebar">
-				<img
-					src={`${import.meta.env.BASE_URL}Secondar Logo_White.png`}
-					alt="Secondary Logo"
-					className="secondary-logo"
-				/>
-
-				{matches &&
-					<Sidebar
-						matches={Object.values(matches)}
-						matchid={matchid}
-					/>
-				}
-			</div>
+			{matchid && matches &&
+				<div className="chat-header">
+					<h3>{matches[matchid].otherUser.firstname}</h3>
+				</div>
+			}
 
 			<div className="chat-main">
 				{messages && userId && matchid &&
@@ -247,7 +245,6 @@ function ChatPage() {
 					alt="Flare Watermark"
 					className="flare-watermark"
 				/>
-
 			</div>
 		</div>
 	);

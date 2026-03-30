@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Panel.css";
 import { t } from "../util/i18n";
 
@@ -7,9 +7,15 @@ import LanguageSection from "./LanguageSection";
 import NotificationsSection from "./NotificationsSection";
 
 import { logoutUser } from "../services/api";
+import { useOutletContext } from "react-router-dom";
 
-export default function SettingsPanel({ me, onMeSettingsUpdated }) {
+export default function SettingsPanel() {
   const [tab, setTab] = useState("profile");
+	const { me, setMobileTitle, onMeSettingsUpdated } = useOutletContext();
+
+	useEffect(() => {
+		setMobileTitle(t("settings"));
+	}, []);
 
   const handleLogout = async () => {
     try {

@@ -101,7 +101,7 @@ export async function registerUser(data) {
 
 export async function loginUser(data) {
 	try {
-		const response = await axios.post(`${API_URL}/api/v1/me/sessions`, data, { headers: { "Content-Type": "application/json" }});
+		const response = await axios.post(`${API_URL}/api/v1/me/sessions`, data, { headers: { "Content-Type": "application/json" } });
 		if (response.data.accessToken) localStorage.setItem('accessToken', response.data.accessToken);
 		if (response.data.refreshToken) localStorage.setItem('refreshToken', response.data.refreshToken);
 
@@ -109,7 +109,7 @@ export async function loginUser(data) {
 
 		return response.data;
 	} catch (error) {
-		if (error.response.status == 401) {
+		if (error.response?.status == 401) {
 			// Invalid username or password!
 			console.log("asdjlkasd")
 			throw new Error("Invalid email or password");
@@ -190,7 +190,7 @@ export async function sendMessage(matchid, message) {
 
 export async function updateMySettings(settingsPatch) {
 	try {
-		const response = axiosInstance.patch('/me/settings', settingsPatch);
+		const response = await axiosInstance.patch('/me/settings', settingsPatch);
 		return response.data;
 	} catch (error) {
 		return {};
@@ -214,23 +214,17 @@ export async function reportChat(matchid) {
 }
 
 export async function resetPasswordWithToken(resetToken, password) {
-  const res = await fetch(`${API_URL}/api/v1/credentials/reset/${resetToken}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ password }),
-  });
+	try {
+		const res = await axios.patch(`${API_URL}/api/v1/credentials/reset/${resetToken}`, JSON.stringify({ password }), { headers: { "Content-Type": "application/json" } });
 
-  const body = await res.json().catch(() => ({}));
+		return res.data;
+	} catch (error) {
+		const message =
+			error.data?.issues?.[0]?.message ||
+			error.data?.message ||
+			error.data?.type ||
+			"Failed to reset password";
 
-  if (!res.ok) {
-    const message =
-      body?.issues?.[0]?.message ||
-      body?.message ||
-      body?.type ||
-      "Failed to reset password";
-
-    throw new Error(message);
-  }
-
-  return body;
+		throw new Error(message);
+	}
 }

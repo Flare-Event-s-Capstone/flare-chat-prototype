@@ -1,0 +1,21 @@
+.sidebar-item {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(35, 35, 35, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.sidebar-item:hover {
+  background-color: #ffca28;
+  transform: scale(1.02);
+}
+
+.sidebar-item.active {
+  border-color: rgba(199, 156, 47, 0.65);
+  box-shadow: 0 0 0 2px rgba(199, 156, 47, 0.12) inset;
+}
