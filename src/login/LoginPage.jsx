@@ -73,6 +73,10 @@ function LoginPage() {
 			// Call API
 			const session = await loginUser({ email, password });
 
+			if (!session) {
+				return;
+			}
+
 			// Demo / verification logs
 			console.log("Login response:", session);
 			console.log("Stored accessToken:", localStorage.getItem("accessToken"));
@@ -111,15 +115,15 @@ function LoginPage() {
 						{formState.errors.map((error) => (
 							<li key={error}>{error}</li>
 						))}
-
-						{loginError && (
-							<ul className="error">
-								<li>{loginError}</li>
-							</ul>
-						)}
-
-					<p id="message"></p>
 					</ul>}
+
+					{loginError && (
+						<ul className="error">
+							<li>{loginError}</li>
+						</ul>
+					)}
+
+					{/*<p id="message"></p>*/}
 
 					<Link to="/reset" className="link-button">Forgot Password?</Link>
 				</form>

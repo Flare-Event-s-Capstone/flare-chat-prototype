@@ -1,6 +1,93 @@
 import { socket } from "./ws";
+import axios from "axios"
 
 const API_URL = import.meta.env.VITE_API_URL;
+
+const axiosInstance = axios.create({
+	baseURL: `${API_URL}/api/v1`,
+	headers: {
+		'Content-Type': 'application/json',
+	},
+});
+
+// Handle authentication for requests if we have an accessToken
+axiosInstance.interceptors.request.use(
+	(config) => {
+		const accessToken = localStorage.getItem('accessToken');
+		if (accessToken) {
+			config.headers.Authorization = `Bearer ${accessToken}`
+		}
+		return config;
+	},
+	(error) => {
+		return Promise.reject(error);
+	}
+)
+
+let isRefreshing = false;
+let failedRequestsQueue = [];
+
+const processQueue = (token) => {
+	failedRequestsQueue.forEach(p => p.resolve(token));
+	failedRequestsQueue = [];
+}
+
+const handleTokenRefreshFailure = () => {
+	localStorage.removeItem('accessToken');
+	localStorage.removeItem('refreshToken');
+	window.location.replace("/");
+}
+
+// Handle token refreshing
+axiosInstance.interceptors.response.use(
+	(response) => response,
+	async (error) => {
+		const originalRequest = error.config;
+		if (error.response?.status == 401 && !originalRequest._retry) {
+			if (isRefreshing) {
+				// If we are already refreshing, enter the original request into the retry queue
+				return new Promise(function (resolve, reject) {
+					failedRequestsQueue.push({ resolve, reject });
+				}).then(token => {
+					originalRequest.headers.Authorization = `Bearer ${token}`;
+					return axiosInstance(originalRequest);
+				}).catch(err => {
+					return Promise.reject(err);
+				})
+			}
+
+			originalRequest._retry = true;
+			isRefreshing = true;
+
+			try {
+				const accessToken = localStorage.getItem('accessToken');
+				const refreshToken = localStorage.getItem('refreshToken');
+				const response = await axios.get(`${API_URL}/api/v1/me/sessions/refresh`, { headers: { Authorization: accessToken, "x-refresh": refreshToken } });
+				const newAccessToken = response.data.accessToken;
+				const newRefreshToken = response.data.refreshToken;
+
+				localStorage.setItem('accessToken', newAccessToken);
+				if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+
+				isRefreshing = false;
+				// Retry the failed requests
+				processQueue(newAccessToken);
+
+				if (!socket.connected) socket.connect();
+
+				originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+				// Retry original request
+				return axiosInstance(originalRequest);
+			} catch (refreshError) {
+				isRefreshing = false;
+				handleTokenRefreshFailure();
+				console.log(refreshError);
+				return Promise.reject(refreshError);
+			}
+		}
+		return Promise.reject(error);
+	}
+)
 
 export async function registerUser(data) {
 	const res = await fetch(`${API_URL}/api/v1/users`, {
@@ -13,229 +100,117 @@ export async function registerUser(data) {
 }
 
 export async function loginUser(data) {
-	const res = await fetch(`${API_URL}/api/v1/me/sessions`, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(data),
-	});
+	try {
+		const response = await axios.post(`${API_URL}/api/v1/me/sessions`, data, { headers: { "Content-Type": "application/json" }});
+		if (response.data.accessToken) localStorage.setItem('accessToken', response.data.accessToken);
+		if (response.data.refreshToken) localStorage.setItem('refreshToken', response.data.refreshToken);
 
-	const body = await res.json().catch(() => ({}));
+		if (!socket.connected) socket.connect();
 
-	if (!res.ok) {
-		throw new Error(body.message || body.type || "Invalid email or password");
+		return response.data;
+	} catch (error) {
+		if (error.response.status == 401) {
+			// Invalid username or password!
+			console.log("asdjlkasd")
+			throw new Error("Invalid email or password");
+		}
 	}
-	// Store tokens for demo + future auth
-	// (Names may differ depending on backend response)
-	if (body.accessToken) localStorage.setItem("accessToken", body.accessToken);
-	if (body.refreshToken) localStorage.setItem("refreshToken", body.refreshToken);
-
-	if (!socket.connected) socket.connect();
-
-	return body;
 }
 
 export async function logoutUser() {
-	const token = localStorage.getItem("accessToken");
-
-	// If we don't have a token, nothing to invalidate server-side
-	if (!token) return;
-
-	const res = await fetch(`${API_URL}/api/v1/me/sessions`, {
-		method: "DELETE",
-		headers: {
-			Authorization: `Bearer ${token}`,
-		},
-	});
-
-	localStorage.removeItem("accessToken");
-	localStorage.removeItem("refreshToken");
-	sessionStorage.clear();
-
-	// optional: if you want to surface an error
-	if (!res.ok) {
-		const body = await res.json().catch(() => ({}));
-		throw new Error(body.message || "Logout failed");
+	try {
+		await axiosInstance.delete('/me/sessions');
+		localStorage.removeItem('accessToken')
+		localStorage.removeItem('refreshToken')
+		sessionStorage.clear();
+	} catch (error) {
+		// Do nothing
 	}
 }
 
 export async function requestPasswordReset(email) {
-	const res = await fetch(`${API_URL}/api/v1/credentials/reset`, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ email }),
-	});
-
-	if (!res.ok) {
-		throw new Error("Failed to request password reset");
-	}
-
-	const data = await res.json(); // resetToken
-	return {
-		message: "If an account exists, a reset link was sent.",
-		resetToken: data.resetToken,
-	};
-}
-
-let refreshInProgress = false;
-
-async function reauth(callback) {
-	const accessToken = localStorage.getItem("accessToken");
-	const refreshToken = localStorage.getItem("refreshToken");
-
-	if (!refreshToken) {
-		localStorage.removeItem("accessToken");
-		localStorage.removeItem("refreshToken");
-		window.location.replace("/");
-		console.log("had no refresh token!")
-		return;
-	}
-
-	let res;
 
 	try {
-		res = await fetch(`${API_URL}/api/v1/me/sessions/refresh`, {
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-				"x-refresh": refreshToken
-			}
-		});
-	} catch (e) {
-		localStorage.removeItem("accessToken");
-		localStorage.removeItem("refreshToken");
-		window.location.replace("/");
-		console.log("error on fetch!", e)
-		return;
+		const response = await axiosInstance.post('/credentials/reset', { email: email });
+		return {
+			message: "If an account exists, a reset link was sent.",
+			resetToken: response.data.resetToken
+		}
+	} catch (error) {
+		return {};
 	}
-
-	if (!res.ok) {
-		localStorage.removeItem("accessToken");
-		localStorage.removeItem("refreshToken");
-		window.location.replace("/");
-		console.log("response bad!")
-		return;
-	}
-
-	const body = await res.json();
-
-	if (body.accessToken) localStorage.setItem("accessToken", body.accessToken);
-	if (body.refreshToken) localStorage.setItem("refreshToken", body.refreshToken);
-
-	return callback();
 }
 
 export async function getMe() {
-	const token = localStorage.getItem("accessToken");
+	try {
+		const response = await axiosInstance.get('/me')
 
-	const res = await fetch(`${API_URL}/api/v1/me`, {
-		headers: {
-			Authorization: `Bearer ${token}`,
-		},
-	});
+		sessionStorage.setItem('userid', response.data.userid);
 
-	if (res.status === 401)
-		return reauth(getMe)
-	else if (!res.ok)
-		throw new Error(res);
-
-	const body = await res.json();
-
-	sessionStorage.setItem("userid", body.userid);
-
-	return body;
+		return response.data;
+	} catch (error) {
+		return {};
+	}
 }
 
 export async function getUser(userId) {
-	const token = localStorage.getItem("accessToken");
-
-	const res = await fetch(`${API_URL}/api/v1/users/${userId}`, {
-		headers: {
-			Authorization: `Bearer ${token}`,
-		},
-	});
-
-	if (res.status === 401)
-		return reauth(getUser)
-	else if (!res.ok)
-		throw new Error(res);
-
-	return await res.json();
+	try {
+		const response = await axiosInstance.get(`/users/${userId}`);
+		return response.data;
+	} catch (error) {
+		return {};
+	}
 }
 
 export async function getMatches() {
-	const token = localStorage.getItem("accessToken");
-
-	const res = await fetch(`${API_URL}/api/v1/me/matches`, {
-		headers: {
-			Authorization: `Bearer ${token}`,
-		},
-	});
-
-	if (res.status === 401)
-		return reauth(getMatches)
-	else if (!res.ok)
-		throw new Error(res);
-
-	return await res.json();
+	try {
+		const response = await axiosInstance.get('/me/matches');
+		return response.data;
+	} catch (error) {
+		return [];
+	}
 }
 
 export async function getMessages(matchid, offset) {
-	const token = localStorage.getItem("accessToken");
-
-	const res = await fetch(`${API_URL}/api/v1/me/messages/${matchid}?offset=${offset}`, {
-		headers: {
-			Authorization: `Bearer ${token}`,
-		},
-	});
-
-	if (res.status === 401)
-		return reauth(() => getMessages(matchid, offset))
-	else if (!res.ok)
-		throw new Error(res);
-
-	return await res.json();
+	try {
+		const response = await axiosInstance.get(`/me/messages/${matchid}?offset=${offset}`);
+		return response.data;
+	} catch (error) {
+		return [];
+	}
 }
 
 export async function sendMessage(matchid, message) {
-	const token = localStorage.getItem("accessToken");
-
-	const res = await fetch(`${API_URL}/api/v1/me/messages/${matchid}/send`, {
-		headers: {
-			Authorization: `Bearer ${token}`,
-			"Content-Type": "application/json"
-		},
-		method: "POST",
-		body: JSON.stringify({ content: message })
-	});
-
-	if (res.status === 401)
-		return reauth(() => sendMessage(matchid, message))
-	else if (!res.ok)
-		throw new Error(res);
+	try {
+		await axiosInstance.post(`/me/messages/${matchid}/send`, { content: message });
+	} catch (error) {
+		// Do nothing...
+	}
 }
 
 export async function updateMySettings(settingsPatch) {
-  const token = localStorage.getItem("accessToken");
+	try {
+		const response = axiosInstance.patch('/me/settings', settingsPatch);
+		return response.data;
+	} catch (error) {
+		return {};
+	}
+}
 
-  const res = await fetch(`${API_URL}/api/v1/me/settings`, {
-    method: "PATCH",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(settingsPatch),
-  });
+export async function leaveChat(matchid) {
+	try {
+		await axiosInstance.delete(`/me/matches/${matchid}`)
+	} catch (error) {
+		// Do nothing...
+	}
+}
 
-  if (res.status === 401) {
-    return reauth(() => updateMySettings(settingsPatch));
-  }
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    console.error("updateMySettings failed:", res.status, text, settingsPatch);
-    throw new Error(text || `Failed to update settings (${res.status})`);
-  }
-
-  return res.json().catch(() => ({}));
+export async function reportChat(matchid) {
+	try {
+		await axiosInstance.get(`/me/matches/${matchid}/report`)
+	} catch (error) {
+		// Do nothing...
+	}
 }
 
 export async function resetPasswordWithToken(resetToken, password) {

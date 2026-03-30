@@ -5,7 +5,7 @@ export async function getAndProcessMatches() {
 
 	const receivedMatches = await getMatches();
 
-	const matchDataArrayPromises = receivedMatches.map(async (match) => {
+	const matchDataArrayPromises = receivedMatches.filter(m => !m.reported).map(async (match) => {
 		const otherUserId = match.userid1 === userid ? match.userid2 : match.userid1;
 
 		const getUserRes = await getUser(otherUserId);

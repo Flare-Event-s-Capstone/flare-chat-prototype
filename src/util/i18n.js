@@ -31,7 +31,11 @@ const translations = {
     emailNotifications: "Email notifications",
     pushNotifications: "Push notifications",
     matchAlerts: "Match alerts",
-    save: "Save"
+    save: "Save",
+		leaveChat: "Leave chat",
+		reportQuestion: "Would you like to report your match?",
+		reportAndLeave: "Report and leave",
+		leave: "Just leave"
   },
 
   fr: {
@@ -56,7 +60,11 @@ const translations = {
     emailNotifications: "Notifications par courriel",
     pushNotifications: "Notifications push",
     matchAlerts: "Alertes de correspondance",
-    save: "Enregistrer"
+    save: "Enregistrer",
+		leaveChat: "Leave chat",
+		reportQuestion: "Would you like to report your match?",
+		reportAndLeave: "Report and leave",
+		leave: "Just leave"
   },
 
   sp: {
@@ -81,7 +89,11 @@ const translations = {
     emailNotifications: "Notificaciones por correo",
     pushNotifications: "Notificaciones push",
     matchAlerts: "Alertas de coincidencia",
-    save: "Guardar"
+    save: "Guardar",
+		leaveChat: "Leave Chat",
+		reportQuestion: "Would you like to report your match?",
+		reportAndLeave: "Report and Leave",
+		leave: "Just Leave"
   }
 };
 
