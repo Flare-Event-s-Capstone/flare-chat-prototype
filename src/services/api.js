@@ -212,3 +212,25 @@ export async function reportChat(matchid) {
 		// Do nothing...
 	}
 }
+
+export async function resetPasswordWithToken(resetToken, password) {
+  const res = await fetch(`${API_URL}/api/v1/credentials/reset/${resetToken}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+
+  const body = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    const message =
+      body?.issues?.[0]?.message ||
+      body?.message ||
+      body?.type ||
+      "Failed to reset password";
+
+    throw new Error(message);
+  }
+
+  return body;
+}
