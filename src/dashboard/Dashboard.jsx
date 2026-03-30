@@ -5,6 +5,7 @@ import "./Dashboard.css";
 import Sidebar from "./Sidebar";
 import MatchesPanel from "./MatchesPanel";
 import SettingsPanel from "./SettingsPanel";
+import NotificationModal from "./NotificationModal";
 
 import { getMe } from "../services/api";
 import { setLanguage } from "../util/i18n";
@@ -14,8 +15,27 @@ export default function Dashboard() {
   const [active, setActive] = useState("matches");
   const [me, setMe] = useState(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [notification, setNotification] = useState(null);
   const navigate = useNavigate();
   const didLoadRef = useRef(false);
+
+  const showNotification = (nextNotification) => {
+    setNotification(nextNotification);
+  };
+
+  const closeNotification = () => {
+    setNotification(null);
+  };
+
+  const buildSettingsNotification = () => ({
+    type: "settings",
+    title: "Settings updated",
+  });
+
+  const buildLanguageNotification = (languageLabel) => ({
+    type: "language",
+    title: `Language changed to ${languageLabel}`,
+  });
 
   useEffect(() => {
     if (didLoadRef.current) return;
@@ -52,7 +72,24 @@ export default function Dashboard() {
         ? { ...prev, settings: { ...(prev.settings || {}), ...settingsPatch } }
         : prev
     );
-    if (settingsPatch?.language) setLanguage(settingsPatch.language);
+
+    if (settingsPatch?.language) {
+      setLanguage(settingsPatch.language);
+
+      const languageMap = {
+        en: "English",
+        fr: "French",
+        sp: "Spanish",
+      };
+
+      showNotification(
+        buildLanguageNotification(
+          languageMap[settingsPatch.language] || settingsPatch.language
+        )
+      );
+    } else {
+      showNotification(buildSettingsNotification());
+    }
   };
 
   const titleMap = {
@@ -154,6 +191,11 @@ export default function Dashboard() {
           </div>
         )}
       </main>
+
+      <NotificationModal
+        notification={notification}
+        onClose={closeNotification}
+      />
     </div>
   );
 }
