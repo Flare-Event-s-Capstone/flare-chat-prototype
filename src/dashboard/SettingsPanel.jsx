@@ -11,11 +11,11 @@ import { useOutletContext } from "react-router-dom";
 
 export default function SettingsPanel() {
   const [tab, setTab] = useState("profile");
-	const { me, setMobileTitle, onMeSettingsUpdated } = useOutletContext();
+  const { me, setMobileTitle, handleMeSettingsUpdated } = useOutletContext();
 
-	useEffect(() => {
-		setMobileTitle(t("settings"));
-	}, []);
+  useEffect(() => {
+    setMobileTitle(t("settings"));
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -79,11 +79,11 @@ export default function SettingsPanel() {
       {tab === "profile" && <ProfileSection me={me} />}
 
       {tab === "language" && (
-        <LanguageSection me={me} onMeSettingsUpdated={onMeSettingsUpdated} />
+        <LanguageSection me={me} onMeSettingsUpdated={handleMeSettingsUpdated} />
       )}
 
       {tab === "notifications" && (
-        <NotificationsSection me={me} onMeSettingsUpdated={onMeSettingsUpdated} />
+        <NotificationsSection me={me} onMeSettingsUpdated={handleMeSettingsUpdated} />
       )}
 
       <button type="button" onClick={handleLogout} className="logout-fixed">

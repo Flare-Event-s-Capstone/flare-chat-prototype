@@ -14,8 +14,8 @@
   },
   "dependencies": {
     "@tanstack/react-virtual": "^3.13.18",
-    "axios": "^1.13.6",
-    "framer-motion": "^12.34.3",
+    "axios": "^1.14.0",
+    "framer-motion": "^12.38.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.5",

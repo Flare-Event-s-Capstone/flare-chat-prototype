@@ -25,11 +25,9 @@ export default function LanguageSection({ me, onMeSettingsUpdated }) {
       await updateMySettings(patch);
 
       onMeSettingsUpdated?.(patch);
-
-      // keep your behavior
-      window.location.reload();
     } catch (err) {
       setError(err?.message || "Failed to save language");
+    } finally {
       setSaving(false);
     }
   };
