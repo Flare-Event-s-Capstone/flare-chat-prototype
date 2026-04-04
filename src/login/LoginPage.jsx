@@ -73,10 +73,6 @@ function LoginPage() {
 			// Call API
 			const session = await loginUser({ email, password });
 
-			if (!session) {
-				return;
-			}
-
 			// Demo / verification logs
 			console.log("Login response:", session);
 			console.log("Stored accessToken:", localStorage.getItem("accessToken"));
@@ -95,7 +91,7 @@ function LoginPage() {
 		if (localStorage.getItem("accessToken")) {
 			navigate("/dashboard", { replace: true });
 		}
-	})
+	}, [navigate])
 
 	return (
 		<>
@@ -125,6 +121,7 @@ function LoginPage() {
 
 					{/*<p id="message"></p>*/}
 
+					<Link to="/create-user" className="link-button">Create User</Link>
 					<Link to="/reset" className="link-button">Forgot Password?</Link>
 				</form>
 
