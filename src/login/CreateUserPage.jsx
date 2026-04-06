@@ -86,9 +86,7 @@ function CreateUserPage() {
 				)}
 
 				{message && (
-					<ul className="success">
-						<li>{message}</li>
-					</ul>
+					<p className='success'>{message}</p>
 				)}
 
 				<Link to="/" className="link-button">Back to Login</Link>
