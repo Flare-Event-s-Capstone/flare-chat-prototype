@@ -86,7 +86,7 @@ function CreateUserPage() {
 				)}
 
 				{message && (
-					<ul className="error">
+					<ul className="success">
 						<li>{message}</li>
 					</ul>
 				)}
