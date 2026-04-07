@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { hasSpecialChars, hasNumber, hasUpperCase, meetsLength } from '../util/validation';
+import { registerUser, loginUser } from '../services/api';
 import './AppLogin.css';
 
 function CreateUserPage() {
 	const [errors, setErrors] = useState([]);
-	const [message, setMessage] = useState('');
+	const [createUserError, setCreateUserError] = useState('');
 	const { token } = useParams();
+	const navigate = useNavigate();
 
-	function handleCreateUser(e) {
+	async function handleCreateUser(e) {
 		e.preventDefault();
 
 		const form = new FormData(e.currentTarget);
@@ -28,7 +30,7 @@ function CreateUserPage() {
 		if (!hasUpperCase(password)) {
 			validationErrors.push('You must provide a password with at least one uppercase character.');
 		}
-        
+
 		if (!hasSpecialChars(password)) {
 			validationErrors.push('You must provide a password with at least one special character.');
 		}
@@ -39,23 +41,28 @@ function CreateUserPage() {
 
 		if (validationErrors.length > 0) {
 			setErrors(validationErrors);
-			setMessage('');
+			setCreateUserError('');
 			return;
 		}
 
 		const requestBody = {
 			email,
 			password,
-			firstname: 'TestFirst',
-			lastname: 'TestLast'
+			firstname: 'Test',
+			lastname: 'User'
 		};
 
-		console.log('Token:', token);
-		console.log('Create user body:', requestBody);
+		try {
+			setErrors([]);
+			setCreateUserError('');
 
-		setErrors([]);
-		setMessage('User submitted successfully.');
-		e.currentTarget.reset();
+			await registerUser(requestBody, token);
+			await loginUser({ email, password });
+
+			navigate('/dashboard');
+		} catch (err) {
+			setCreateUserError(err.message || 'Failed to create user.');
+		}
 	}
 
 	return (
@@ -85,8 +92,10 @@ function CreateUserPage() {
 					</ul>
 				)}
 
-				{message && (
-					<p className='success'>{message}</p>
+				{createUserError && (
+					<ul className="error">
+						<li>{createUserError}</li>
+					</ul>
 				)}
 
 				<Link to="/" className="link-button">Back to Login</Link>
