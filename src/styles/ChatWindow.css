@@ -1,23 +1,25 @@
 .chat-window {
-  flex: 1;
-  padding: 25px 30px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+	flex: 1;
+	padding: 25px 30px;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
 	overflow-anchor: auto;
-  gap: 10px;
+	gap: 10px;
+	padding-top: 76px;
+	position: relative;
 }
 
 .message {
-  background-color: #222;
-  color: #eee;
-  padding: 10px 15px;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-	white-space: normal;
-	word-wrap: break-word;
-	width: fit-content;
+	background-color: #222;
+	color: #eee;
+	padding: 10px 15px;
+	border-radius: 12px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	word-wrap: anywhere;
+	word-break: normal;
 	display: inline-block;
+	font-size: 1em;
 }
 
 .message-container {
@@ -27,7 +29,7 @@
 }
 
 .message-container.left {
-  align-self: flex-start;
+	align-self: flex-start;
 }
 
 .timestamp {
@@ -45,7 +47,7 @@
 }
 
 .message-container.right {
-  align-self: flex-end;
+	align-self: flex-end;
 }
 
 .message.left {
@@ -54,8 +56,8 @@
 
 .message.right {
 	align-self: flex-end;
-  background-color: #b79b46;
-  color: #141414;
+	background-color: #b79b46;
+	color: #141414;
 }
 
 .day {

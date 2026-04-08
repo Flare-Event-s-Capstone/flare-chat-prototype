@@ -1,20 +1,48 @@
 .chat-container {
 	display: flex;
-	height: 100vh;
-	width: 100vw;
 	background-color: #0f0f0f;
 	color: #f5f5f5;
 	font-family: "Segoe UI", Roboto, sans-serif;
+	height: 100vh;
+	overflow: hidden;
+	position: relative;
 }
 
 .chat-main {
 	flex: 3;
 	display: flex;
 	flex-direction: column;
-	border-left: 2px solid #b79b46;
 	background-color: #141414;
 	position: relative;
 	overflow: hidden;
+}
+
+.chat-header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+
+	position: absolute;
+	width: 100%;
+
+	height: 56px;
+	padding-top: env(safe-area-inset-top);
+
+	background: rgba(20, 20, 20, 0.85);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+	backdrop-filter: blur(10px);
+	z-index: 5000;
+}
+
+@media (max-width: 768px) {
+	.chat-header {
+		display: none !important;
+		width: 0 !important;
+		padding: 0 !important;
+		margin: 0 !important;
+		border: 0 !important;
+	}
 }
 
 .flare-watermark {

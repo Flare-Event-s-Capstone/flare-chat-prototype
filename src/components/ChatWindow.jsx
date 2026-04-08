@@ -45,15 +45,14 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 		}
 
 		prevScrollHeightRef.current = chatRef.current.scrollHeight;
-	});
+	}, [messages]);
 
 	useEffect(() => {
 		if (atMoreMessages) {
 			handleMoreMessages(offsetCount);
 			setAtMoreMessages(false);
 		}
-
-	}, [atMoreMessages])
+	}, [atMoreMessages]);
 
 	useEffect(() => {
 		if (chatRef.current) {
@@ -65,9 +64,7 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 				chatRef.current.removeEventListener('scroll', handleScroll);
 			}
 		};
-
 	}, []);
-
 
 	useLayoutEffect(() => {
 		if (scrollToRef.current && (scrollToBottom || isNearBottom())) {
@@ -98,7 +95,7 @@ function ChatWindow({ userId, messages, pendingMessages, handleMoreMessages, off
 			return sentTime.toDateString();
 		}
 	}
-	
+
 	const shouldPlaceDay = (messages, index, noMoreMessages) => {
 		if (index == 0)
 			return noMoreMessages || messages.length < 20;

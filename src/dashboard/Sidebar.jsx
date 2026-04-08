@@ -1,7 +1,8 @@
 import "./Sidebar.css";
 import { t } from "../util/i18n";
+import NavItem from "./NavItem";
 
-export default function Sidebar({ me, active, onSelect }) {
+export default function Sidebar({ me }) {
   const initials =
     (me?.firstname?.[0] || "") + (me?.lastname?.[0] || "") || "U";
 
@@ -18,37 +19,11 @@ export default function Sidebar({ me, active, onSelect }) {
       </div>
 
       <nav className="sidebar-nav">
-        <button
-          className={`sidebar-item ${active === "messages" ? "active" : ""}`}
-          onClick={() => onSelect("messages")}
-          type="button"
-        >
-          {t("messages")}
-        </button>
+				<NavItem label={t("matches")} to={"/dashboard"} />
 
-        <button
-          className={`sidebar-item ${active === "matches" ? "active" : ""}`}
-          onClick={() => onSelect("matches")}
-          type="button"
-        >
-          {t("matches")}
-        </button>
+				<NavItem label={t("events")} to={"/dashboard/events"} />
 
-        <button
-          className={`sidebar-item ${active === "events" ? "active" : ""}`}
-          onClick={() => onSelect("events")}
-          type="button"
-        >
-          {t("events")}
-        </button>
-
-        <button
-          className={`sidebar-item ${active === "settings" ? "active" : ""}`}
-          onClick={() => onSelect("settings")}
-          type="button"
-        >
-          {t("settings")}
-        </button>
+				<NavItem label={t("settings")} to={"/dashboard/settings"} />
       </nav>
     </aside>
   );

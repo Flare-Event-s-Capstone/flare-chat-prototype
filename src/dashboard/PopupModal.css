@@ -4,46 +4,135 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Dim background */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Ensure it's on top */
+  z-index: 1000;
 }
 
 .popupmodal-content {
   max-width: 500px;
+  width: 100%;
   z-index: 1001;
   position: relative;
   background: #1e1e1e;
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 12px;
   padding: 20px;
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .popupmodal-close-button {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 20px;
+  right: 20px;
+
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   cursor: pointer;
-  border: none;
-  background: none;
-  font-size: 1.5rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #bfbfbf;
+
+  transition: transform 0.15s ease, color 0.15s ease;
 }
 
 .popupmodal-close-button:hover {
-	background: none;
+  background: transparent !important;
+  color: #ff4d4d;
+  transform: scale(1.15);
+}
+
+.popupmodal-close-button:active,
+.popupmodal-close-button:focus {
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 .popupmodal-header {
   font-weight: 600;
   margin-bottom: 40px;
-	text-align: center;
+  text-align: center;
 }
 
 .popupmodal-buttons {
-	display: flex;
-	justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
+}
+
+.profile-modal-banner {
+  height: 120px;
+  width: calc(100% + 40px);
+  margin: -20px -20px 0 -20px;
+  background: linear-gradient(135deg, #b79b46 0%, #817143 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+.profile-modal-avatar {
+  width: 96px;
+  height: 96px;
+  margin: -48px auto 12px auto;
+  border-radius: 50%;
+  background: #2a2a2a;
+  border: 4px solid #1e1e1e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.profile-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.profile-modal-name {
+  text-align: center;
+  margin: 0 0 8px 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.profile-modal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-modal-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #b79b46;
+}
+
+.profile-modal-value {
+  min-height: 42px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  background: #2a2a2a;
+  color: rgba(255,255,255,0.7);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
 }
