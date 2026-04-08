@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LoginPage from './login/LoginPage.jsx'
+import CreateUserPage from './login/CreateUserPage.jsx'
 import ResetPassword from './login/ResetPassword.jsx'
 import ResetSent from './login/ResetSent.jsx'
 import ResetPasswordLink from './login/ResetPasswordLink.jsx'
@@ -17,15 +18,16 @@ createRoot(document.getElementById('root')).render(
     <BrowserRouter basename="/flare-chat-prototype">
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route path="/create-user" element={<CreateUserPage />} />
         <Route path="/reset" element={<ResetPassword />} />
         <Route path="/reset/sent" element={<ResetSent />} />
         <Route path="/reset/:resetToken" element={<ResetPasswordLink />} />
         <Route path="/dashboard" element={<Dashboard />}>
-					<Route index element={<MatchesPanel />} />
-					<Route path="settings" element={<SettingsPanel />} />
-					<Route path="events" element={<EventsPanel />} />
-					<Route path="chat/:matchid" element={<ChatPage />} />
-				</Route>
+          <Route index element={<MatchesPanel />} />
+          <Route path="settings" element={<SettingsPanel />} />
+          <Route path="events" element={<EventsPanel />} />
+          <Route path="chat/:matchid" element={<ChatPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   </StrictMode>,

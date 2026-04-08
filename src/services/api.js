@@ -45,7 +45,6 @@ axiosInstance.interceptors.response.use(
 		const originalRequest = error.config;
 		if (error.response?.status == 401 && !originalRequest._retry) {
 			if (isRefreshing) {
-				// If we are already refreshing, enter the original request into the retry queue
 				return new Promise(function (resolve, reject) {
 					failedRequestsQueue.push({ resolve, reject });
 				}).then(token => {
@@ -70,13 +69,11 @@ axiosInstance.interceptors.response.use(
 				if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
 
 				isRefreshing = false;
-				// Retry the failed requests
 				processQueue(newAccessToken);
 
 				if (!socket.connected) socket.connect();
 
 				originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
-				// Retry original request
 				return axiosInstance(originalRequest);
 			} catch (refreshError) {
 				isRefreshing = false;
@@ -89,14 +86,35 @@ axiosInstance.interceptors.response.use(
 	}
 )
 
-export async function registerUser(data) {
-	const res = await fetch(`${API_URL}/api/v1/users`, {
+export async function registerUser(data, token) {
+	const url = token
+		? `${API_URL}/api/v1/users?token=${encodeURIComponent(token)}`
+		: `${API_URL}/api/v1/users`;
+
+	const res = await fetch(url, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(data),
 	});
 
-	return await res.json();
+	let result = {};
+
+	try {
+		result = await res.json();
+	} catch {
+		result = {};
+	}
+
+	if (!res.ok) {
+		throw new Error(
+			result?.issues?.[0]?.message ||
+			result?.message ||
+			result?.type ||
+			"Failed to create user."
+		);
+	}
+
+	return result;
 }
 
 export async function loginUser(data) {
@@ -110,10 +128,13 @@ export async function loginUser(data) {
 		return response.data;
 	} catch (error) {
 		if (error.response?.status == 401) {
-			// Invalid username or password!
-			console.log("asdjlkasd")
 			throw new Error("Invalid email or password");
 		}
+		throw new Error(
+			error.response?.data?.message ||
+			error.response?.data?.type ||
+			"Login failed"
+		);
 	}
 }
 
@@ -123,13 +144,10 @@ export async function logoutUser() {
 		localStorage.removeItem('accessToken')
 		localStorage.removeItem('refreshToken')
 		sessionStorage.clear();
-	} catch (error) {
-		// Do nothing
-	}
+	} catch (error) {}
 }
 
 export async function requestPasswordReset(email) {
-
 	try {
 		const response = await axiosInstance.post('/credentials/reset', { email: email });
 		return {
@@ -144,9 +162,7 @@ export async function requestPasswordReset(email) {
 export async function getMe() {
 	try {
 		const response = await axiosInstance.get('/me')
-
 		sessionStorage.setItem('userid', response.data.userid);
-
 		return response.data;
 	} catch (error) {
 		return {};
@@ -183,9 +199,7 @@ export async function getMessages(matchid, offset) {
 export async function sendMessage(matchid, message) {
 	try {
 		await axiosInstance.post(`/me/messages/${matchid}/send`, { content: message });
-	} catch (error) {
-		// Do nothing...
-	}
+	} catch (error) {}
 }
 
 export async function updateMySettings(settingsPatch) {
@@ -200,23 +214,18 @@ export async function updateMySettings(settingsPatch) {
 export async function leaveChat(matchid) {
 	try {
 		await axiosInstance.delete(`/me/matches/${matchid}`)
-	} catch (error) {
-		// Do nothing...
-	}
+	} catch (error) {}
 }
 
 export async function reportChat(matchid) {
 	try {
 		await axiosInstance.get(`/me/matches/${matchid}/report`)
-	} catch (error) {
-		// Do nothing...
-	}
+	} catch (error) {}
 }
 
 export async function resetPasswordWithToken(resetToken, password) {
 	try {
 		const res = await axios.patch(`${API_URL}/api/v1/credentials/reset/${resetToken}`, JSON.stringify({ password }), { headers: { "Content-Type": "application/json" } });
-
 		return res.data;
 	} catch (error) {
 		const message =
