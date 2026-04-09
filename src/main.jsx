@@ -15,7 +15,7 @@ import ChatPage from './components/ChatPage.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter basename="/flare-chat-prototype">
+    <BrowserRouter basename="/">
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/create-user" element={<CreateUserPage />} />
