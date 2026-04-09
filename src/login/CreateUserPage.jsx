@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { hasSpecialChars, hasNumber, hasUpperCase, meetsLength } from '../util/validation';
 import { registerUser, loginUser } from '../services/api';
 import './AppLogin.css';
@@ -7,7 +7,7 @@ import './AppLogin.css';
 function CreateUserPage() {
 	const [errors, setErrors] = useState([]);
 	const [createUserError, setCreateUserError] = useState('');
-	const { token } = useParams();
+	const [searchParams, setSearchParams] = useSearchParams();
 	const navigate = useNavigate();
 
 	async function handleCreateUser(e) {
@@ -16,6 +16,8 @@ function CreateUserPage() {
 		const form = new FormData(e.currentTarget);
 		const email = form.get('email')?.trim() || '';
 		const password = form.get('password') || '';
+		const firstname = form.get('firstname') || '';
+		const lastname = form.get('lastname') || '';
 
 		let validationErrors = [];
 
@@ -48,15 +50,15 @@ function CreateUserPage() {
 		const requestBody = {
 			email,
 			password,
-			firstname: 'Test',
-			lastname: 'User'
+			firstname,
+			lastname
 		};
 
 		try {
 			setErrors([]);
 			setCreateUserError('');
 
-			await registerUser(requestBody, token);
+			await registerUser(requestBody, searchParams.get("token"));
 			await loginUser({ email, password });
 
 			navigate('/dashboard');
@@ -81,6 +83,12 @@ function CreateUserPage() {
 
 				<label htmlFor="password">Password</label>
 				<input id="password" type="password" name="password" placeholder="Enter Password" />
+
+				<label htmlFor="firstname">First Name</label>
+				<input id="firstname" type="text" name="firstname" placeholder="Enter First Name" />
+
+				<label htmlFor="lastname">Last Name</label>
+				<input id="lastname" type="text" name="lastname" placeholder="Enter Last Name" />
 
 				<button type="submit">Create Account</button>
 
